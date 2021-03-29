@@ -5,4 +5,5 @@
 import re
 
 lista_ordenada = dir(re)
-print(lista_ordenada.sort())
+lista_ordenada.sort()
+print(lista_ordenada)
