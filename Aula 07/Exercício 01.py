@@ -40,17 +40,19 @@ cabecalho = ['Lista de Produtos', 'QTD Entradas', 'QTD Saídas', 'Saldo Estoque'
 fim = ['TOTAL', 5774.00]
 # Aqui declaro as linhas para printar e os espaços de tudo
 linha = '+'+'-'*40+('+'+'-'*15)*5+'+'
-espacos = '|%40s|%15s|%15s|%15s|%15s|%15s|'
+espacos_cabecalho = '|%40s|%15s|%15s|%15s|%15s|%15s|'
+espacos_produtos = '|%40s|%15d|%15d|%15d|%15.2f|%15.2f|'
+espacos_fim = '|%40s|%15s|%15s|%15s|%15s|%15.2f|'
 
 # Printando o Cabeçalho
 print(linha)
-print(espacos % (cabecalho[0], cabecalho[1], cabecalho[2], cabecalho[3], cabecalho[4], cabecalho[5]))
+print(espacos_cabecalho % (cabecalho[0], cabecalho[1], cabecalho[2], cabecalho[3], cabecalho[4], cabecalho[5]))
 # Printando os Produtos
 for x in range(len(produtos)):
     print(linha)
-    print(espacos % (produtos[x].nome, produtos[x].entrada, produtos[x].saida, produtos[x].saldo, produtos[x].preco,
+    print(espacos_produtos % (produtos[x].nome, produtos[x].entrada, produtos[x].saida, produtos[x].saldo, produtos[x].preco,
                      produtos[x].subtotal))
 print(linha)
 # Printando o Fim
-print(espacos % (' ', ' ', ' ', ' ', fim[0], fim[1]))
+print(espacos_fim % (' ', ' ', ' ', ' ', fim[0], fim[1]))
 print(linha)
