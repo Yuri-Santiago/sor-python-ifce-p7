@@ -50,8 +50,8 @@ print(espacos_cabecalho % (cabecalho[0], cabecalho[1], cabecalho[2], cabecalho[3
 # Printando os Produtos
 for x in range(len(produtos)):
     print(linha)
-    print(espacos_produtos % (produtos[x].nome, produtos[x].entrada, produtos[x].saida, produtos[x].saldo, produtos[x].preco,
-                     produtos[x].subtotal))
+    print(espacos_produtos % (produtos[x].nome, produtos[x].entrada, produtos[x].saida, produtos[x].saldo,
+                              produtos[x].preco, produtos[x].subtotal))
 print(linha)
 # Printando o Fim
 print(espacos_fim % (' ', ' ', ' ', ' ', fim[0], fim[1]))
