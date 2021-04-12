@@ -1,0 +1,1 @@
+### Aula 8 onde aprendemos a serialização em Python, aqui vimos os módulos Pickle e Json, que nos ajuda a persistir os dados em formatos melhores, com métodos de fácil utilização.
