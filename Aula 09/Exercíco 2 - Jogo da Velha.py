@@ -30,7 +30,7 @@ def marcar(pos):  # Função de Marcar no Grid
             v = 1
         posicao[pos].configure(text=marcacao)
         finalizar()
-        jogador.configure(text=f'Vez do Jogador {v}')
+        jogador.configure(text=f'Jogador {v}')
 
 
 def trocar():  # Função que troca as posições do Grid
@@ -38,8 +38,9 @@ def trocar():  # Função que troca as posições do Grid
     if p == 8:
         p = -1
     p += 1
-    fila = ['(0, 0)', '(0, 1)', '(0, 2)', '(1, 0)', '(1, 1)', '(1, 2)', '(2, 0)', '(2, 1)', '(2, 2)']
-    local.configure(text=f"Posição {fila[p]}")
+    fila = ['Esquerda Superior', 'Meio Superior', 'Direita Superior', 'Esquerda Central', 'Centro', 'Direita Central',
+            'Esquerda Inferior', 'Meio Inferior', 'Direita Inferior']
+    local.configure(text=f"{fila[p]}")
 
 
 def finalizar():  # Fução que Verifica se o Jogo Acabou
@@ -54,10 +55,10 @@ def finalizar():  # Fução que Verifica se o Jogo Acabou
         if condicao == 9:
             mensagem.configure(text='Fim de Jogo!\nDeu Velha!')
             marca.configure(text='Reiniciar', command=lambda: reiniciar())
-            troca.configure(text='Fim de Jogo', command=lambda: principal.quit())
+            troca.configure(text='Fechar', command=lambda: principal.quit())
     else:
         marca.configure(text='Reiniciar', command=lambda: reiniciar())
-        troca.configure(text='Fim de Jogo', command=lambda: principal.quit())
+        troca.configure(text='Fechar', command=lambda: principal.quit())
 
 
 def ganhar():  # Função que Checa se Algum Jogador Ganhou
@@ -101,7 +102,7 @@ def reiniciar():
     d = 0
     for w in range(3):
         for z in range(3):
-            posicao[d] = Label(cima, text='', width=3, height=2, font=('Impact', '15'))
+            posicao[d] = Label(cima, text='', width=3, height=2, font=('Impact', '20'))
             posicao[d].grid(row=w, column=z, padx=2, pady=2)
             d += 1
 
@@ -109,7 +110,7 @@ def reiniciar():
 # Criando a Tela Principal
 principal = Tk()
 principal.title("Jogo da Velha")
-principal.geometry('320x300')
+principal.geometry('310x350')
 
 # Criando Janelas
 cima = Frame(principal)
@@ -123,7 +124,7 @@ fundo.pack()
 c = 0
 for x in range(3):
     for y in range(3):
-        posicao[c] = Label(cima, text='', width=3, height=2, font=('Impact', '15'))
+        posicao[c] = Label(cima, text='', width=3, height=2, font=('Impact', '20'))
         posicao[c].grid(row=x, column=y, padx=2, pady=2)
         c += 1
 
@@ -132,10 +133,10 @@ marca = Button(baixo, text="Marcar", command=lambda: marcar(p))
 marca.grid(row=0, column=0, padx=1, pady=1)
 troca = Button(baixo, text="Trocar Posição", command=lambda: trocar())
 troca.grid(row=0, column=1, padx=1, pady=1)
-jogador = Label(baixo, text="Vez do Jogador 1", font=('Impact', '15'))
+jogador = Label(baixo, text="Jogador 1", font=('Impact', '13'))
 jogador.grid(row=1, column=0, padx=1, pady=1)
-local = Label(baixo, text="Posição (0, 0)", font=('Impact', '15'))
+local = Label(baixo, text="Esquerda Superior", font=('Impact', '13'))
 local.grid(row=1, column=1, padx=1, pady=1)
-mensagem = Label(fundo, text="Bom Jogo!", font=('Impact', '15'))
+mensagem = Label(fundo, text="Bom Jogo!", font=('Impact', '13'))
 mensagem.grid(row=0, column=0, padx=1, pady=1)
 principal.mainloop()
