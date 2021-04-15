@@ -7,40 +7,57 @@ para eles.
 from tkinter import *
 
 # Variáveis Globais
-p = 0
-vez = 0
+joga = 1
+vez = 1
+marcacao = 'X'
 posicao = [None, None, None, None, None, None, None, None, None]
-
+a = 1
+p = 0
 # Funções
 
 
-def marcar(pos):  # Função de Marcar no Grid
-    if posicao[pos]['text'] != '':
+def troca_vez():  # Função de Trocar a Vez
+    global vez
+    global marcacao
+    global joga
+    if vez % 2 != 0:
+        marcacao = 'O'
+        joga = 2
+    else:
+        marcacao = 'X'
+        joga = 1
+    vez += 1
+
+
+def marcar():  # Função de Marcar no Grid
+    global p
+    global marcacao
+    if posicao[p]['fg'] != 'grey':
         mensagem.configure(text='Jogada Inválida\nSelecione uma posição válida')
         finalizar()
     else:
         mensagem.configure(text='Continue o Jogo')
-        global vez
-        vez += 1
-        if vez % 2 != 0:
-            marcacao = 'X'
-            v = 2
-        else:
-            marcacao = 'O'
-            v = 1
-        posicao[pos].configure(text=marcacao)
+        posicao[p].configure(text=marcacao, fg='black')
+        troca_vez()
         finalizar()
-        jogador.configure(text=f'Jogador {v}')
+        jogador.configure(text=f'Jogador {joga}')
 
 
 def trocar():  # Função que troca as posições do Grid
     global p
+    global marcacao
     if p == 8:
         p = -1
     p += 1
     fila = ['Esquerda Superior', 'Meio Superior', 'Direita Superior', 'Esquerda Central', 'Centro', 'Direita Central',
             'Esquerda Inferior', 'Meio Inferior', 'Direita Inferior']
     local.configure(text=f"{fila[p]}")
+
+    if posicao[p]['fg'] == 'black' and posicao[p]['text'] == '':
+        posicao[p].configure(text=marcacao, fg='grey')
+
+    if posicao[p-1]['fg'] != 'black':
+        posicao[p-1].configure(text='', fg='black')
 
 
 def finalizar():  # Fução que Verifica se o Jogo Acabou
@@ -62,11 +79,11 @@ def finalizar():  # Fução que Verifica se o Jogo Acabou
 
 
 def ganhar():  # Função que Checa se Algum Jogador Ganhou
-    global vez
-    if vez % 2 != 0:
-        v = 1
-    else:
+    global joga
+    if joga == 1:
         v = 2
+    else:
+        v = 1
     vit = 0
     # Verificação Horizontal
     for m in range(0, 7, 3):
@@ -96,15 +113,19 @@ def ganhar():  # Função que Checa se Algum Jogador Ganhou
     return False
 
 
-def reiniciar():
-    marca.configure(text="Marcar", command=lambda: marcar(p))
+def reiniciar():  # Função para Reiniciar o Grid
+    global a
+    a = 1
+    marca.configure(text="Marcar", command=lambda: marcar())
     troca.configure(text="Trocar Posição", command=lambda: trocar())
+    mensagem.configure(text='Bom Jogo!')
     d = 0
     for w in range(3):
         for z in range(3):
-            posicao[d] = Label(cima, text='', width=3, height=2, font=('Impact', '20'))
+            posicao[d] = Label(cima, text='', fg='black', width=4, height=2, font=('Impact', '20'))
             posicao[d].grid(row=w, column=z, padx=2, pady=2)
             d += 1
+    posicao[p].configure(text=marcacao, fg='grey')
 
 
 # Criando a Tela Principal
@@ -113,23 +134,23 @@ principal.title("Jogo da Velha")
 principal.geometry('310x350')
 
 # Criando Janelas
-cima = Frame(principal)
+cima = Frame(principal, bg='black')
 baixo = Frame(principal)
 fundo = Frame(principal)
 cima.pack()
 baixo.pack()
 fundo.pack()
 
-# Criando os Labels
+# Criando o Grid
 c = 0
 for x in range(3):
     for y in range(3):
-        posicao[c] = Label(cima, text='', width=3, height=2, font=('Impact', '20'))
+        posicao[c] = Label(cima, text='', fg='black', width=4, height=2, font=('Impact', '20'))
         posicao[c].grid(row=x, column=y, padx=2, pady=2)
         c += 1
 
-# Jogo
-marca = Button(baixo, text="Marcar", command=lambda: marcar(p))
+# Criando os botões do Jogo e alguns Labels
+marca = Button(baixo, text="Marcar", command=lambda: marcar())
 marca.grid(row=0, column=0, padx=1, pady=1)
 troca = Button(baixo, text="Trocar Posição", command=lambda: trocar())
 troca.grid(row=0, column=1, padx=1, pady=1)
@@ -139,4 +160,5 @@ local = Label(baixo, text="Esquerda Superior", font=('Impact', '13'))
 local.grid(row=1, column=1, padx=1, pady=1)
 mensagem = Label(fundo, text="Bom Jogo!", font=('Impact', '13'))
 mensagem.grid(row=0, column=0, padx=1, pady=1)
+posicao[0].configure(text=marcacao, fg='grey')
 principal.mainloop()
