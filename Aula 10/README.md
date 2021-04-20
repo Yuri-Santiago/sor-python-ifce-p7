@@ -1,0 +1,1 @@
+### Aula 10 onde aprendemos sobre Classes em Python e um pouco de orientação a objeto, usando os principais métodos das classes, como criari atributos e novos métodos para classes novas.
