@@ -1,4 +1,6 @@
 """
+# Exercício 01 - Tabela #
+
 Reproduza o conteúdo da tabela mostrada usando comandos a saída formatada do Python para exibir os dados em formato
 texto. Ver exemplo.
 +--------------------+-------+

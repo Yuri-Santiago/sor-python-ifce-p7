@@ -1,5 +1,7 @@
 """
-1. Utilizar exercícios das aulas anteriores e criar interfaces gráficas
+# Exercício 02 - Jogo da Velha #
+
+Utilizar exercícios das aulas anteriores e criar interfaces gráficas
 para eles.
 """
 # Programa Feito por Yuri Mateus Santiago, no dia 13-04-2021
