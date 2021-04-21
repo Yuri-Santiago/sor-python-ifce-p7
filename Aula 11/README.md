@@ -1,0 +1,1 @@
+### Aula 11 onde começamos a trabalhar com a programação em redes, usando os Sockets que possuem um módulo específico, assim aprendemos a usar esse módulo e alguns de seus métodos para construir um programa em formato de cliente e servidor, nossa atividade foi criar um servidor Echo que se comunicasse entre dois programas.
