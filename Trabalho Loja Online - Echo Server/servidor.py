@@ -1,22 +1,14 @@
 from produto import Produto
 from item import Item
 from usuario import Usuario
-import socket
+from echo_socket import EchoSocket
 
 # Criando o Socket do Servidor
-socket_servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# Definindo o endereço do Servidor
-host = '127.0.0.1'
-port = 8080
-
-# Conectando o socket com a porta
-socket_servidor.bind((host, port))
+socket_servidor = EchoSocket()
 
 # Socket começa a escutar solicitações
-socket_servidor.listen()
+socket_servidor.escutar_atomico()
 
-# Funções do Servidor
 # Salvando os Produtos da Loja e os Usuários
 with open('produtos.txt', 'r') as arquivo_produtos:
     linhas = arquivo_produtos.readlines()
@@ -29,23 +21,21 @@ logins = {u.split('-')[1]: u.split('-')[2] for u in usuarios_cadastrados}
 # Começo das conexão
 while True:
     # Estabelece uma Conexão
-    socket_cliente, endereco = socket_servidor.accept()
+    socket_cliente, endereco = socket_servidor.aceitar_cliente()
     print("Conexão Estabelecida com: %s" % str(endereco))
-
-    # Programa Funcionando
 
     # Criando o Usuário
     while True:
-        menu = int(socket_cliente.recv(1024))
+        menu = socket_cliente.receber_inteiro()
 
         # Criando Conta do Usuário
         if menu == 1:
-            nome = socket_cliente.recv(1024).decode('utf-8')
-            email = socket_cliente.recv(1024).decode('utf-8')
-            senha = socket_cliente.recv(1024).decode('utf-8')
+            nome = socket_cliente.receber_decodificado()
+            email = socket_cliente.receber_decodificado()
+            senha = socket_cliente.receber_decodificado()
             usuario = Usuario(nome, email, senha)
             resposta = 'Conta Criada com Sucesso!'
-            socket_cliente.send(resposta.encode('utf-8'))
+            socket_cliente.enviar(resposta)
 
             with open('usuarios.txt', 'a') as arquivo_usuarios:
                 arquivo_usuarios.write(f'\n{nome}-{email}-{senha}-')
@@ -55,25 +45,25 @@ while True:
         elif menu == 2:
             while True:
                 # TODO
-                email = socket_cliente.recv(1024).decode('utf-8')
-                senha = socket_cliente.recv(1024).decode('utf-8')
+                email = socket_cliente.receber_decodificado()
+                senha = socket_cliente.receber_decodificado()
                 if email in logins.keys():
                     if senha == logins[email]:
                         resposta = 'Bem vindo!'
-                        socket_cliente.send(resposta.encode('utf-8'))
+                        socket_cliente.enviar(resposta)
                 else:
                     resposta = 'Email Não Cadastrado'
-                    socket_cliente.send(resposta.encode('utf-8'))
+                    socket_cliente.enviar(resposta)
             break
         # Sair
         elif menu == 3:
-            socket_cliente.close()
-            socket_servidor.close()
+            socket_cliente.fechar()
+            socket_servidor.fechar()
             break
 
     # Dentro da Loja
     while True:
-        opc = int(socket_cliente.recv(1024))
+        opc = socket_cliente.receber_inteiro()
 
         # Mostrar os Produtos da Loja
         if opc == 1:
@@ -81,39 +71,41 @@ while True:
             for i, produto in enumerate(produtos):
                 resposta += 'ID: %d - Produto: %s - Preço: %.2fR$\n' % \
                            (i, produto.get_nome(), produto.get_preco())
-            socket_cliente.send(resposta.encode('utf-8'))
+            socket_cliente.enviar(resposta)
 
         # Adicionar Produto no Carrinho
         elif opc == 2:
-            id_produto = int(socket_cliente.recv(1024))
-            quantidade = int(socket_cliente.recv(1024))
+            id_produto = socket_cliente.receber_inteiro()
+            quantidade = socket_cliente.receber_inteiro()
+
             item = Item(produtos[id_produto], quantidade)
             usuario.get_compra().add_item(item)
+
             resposta = 'Item Adicionado ao Carrinho com Sucesso!'
-            socket_cliente.send(resposta.encode('utf-8'))
+            socket_cliente.enviar(resposta)
 
         # Listar os Itens do Carrinho
         elif opc == 3:
             resposta = '\nLista de Itens do Carrinho:\n'
             resposta += usuario.get_compra().listar_itens()
             resposta += 'O Valor Total o Carrinho é: %.2fR$' % (usuario.get_compra().get_valor_compra())
-            socket_cliente.send(resposta.encode('utf-8'))
+            socket_cliente.enviar(resposta)
 
         # Finalizar a Compra
         elif opc == 4:
             resposta = usuario.get_carteira().pagar(usuario.get_compra().get_valor_compra())
-            socket_cliente.send(resposta.encode('utf-8'))
+            socket_cliente.enviar(resposta)
 
         # Adicionar dinheiro na Carteira
         elif opc == 5:
-            valor = int(socket_cliente.recv(1024))
+            valor = socket_cliente.receber_inteiro()
             resposta = usuario.get_carteira().adicionar(valor)
-            socket_cliente.send(resposta.encode('utf-8'))
+            socket_cliente.enviar(resposta)
 
         # Dinheiro total na Carteira
         elif opc == 6:
             resposta = 'Você possui na Carteira: %.2fR$' % usuario.get_carteira().get_total()
-            socket_cliente.send(resposta.encode('utf-8'))
+            socket_cliente.enviar(resposta)
 
         # Sair
         elif opc == 7:
@@ -122,5 +114,5 @@ while True:
             break
 
     # Finaliza a Conexão
-    socket_cliente.close()
-    socket_servidor.close()
+    socket_cliente.fechar()
+    socket_servidor.fechar()
