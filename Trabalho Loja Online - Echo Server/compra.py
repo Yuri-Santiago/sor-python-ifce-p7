@@ -22,6 +22,6 @@ class Compra:
                              (contador, item.get_produto_nome(), item.get_produto_preco())
                 contador += 1
         else:
-            resultado += 'Sem items na Compra'
+            resultado += 'Sem items na Compra\n'
 
         return resultado

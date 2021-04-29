@@ -19,11 +19,16 @@ while True:
 
     # Criando Conta do Usuário
     if int(menu) == 1:
-        nome = input('Digite seu Nome Completo: ')
+        nome = input('Digite seu Nome Completo para Criar sua Conta: ')
         socket_cliente.enviar(nome)
-        email = input('Digite seu Email para Login: ')
-        socket_cliente.enviar(email)
-        senha = input('Digite sua Senha para Login: ')
+        while True:
+            email = input('Digite seu Email para Criar sua Conta: ')
+            socket_cliente.enviar(email)
+            resposta = socket_cliente.receber_decodificado()
+            print(resposta)
+            if resposta == 'Email Válido!':
+                break
+        senha = input('Digite sua Senha para Criar sua Conta: ')
         socket_cliente.enviar(senha)
         resposta = socket_cliente.receber_decodificado()
         print(resposta)
@@ -105,9 +110,10 @@ while int(opc) != 0:
         resposta = socket_cliente.receber_decodificado()
         print(resposta)
 
-    # Deslogar
+    # Sair do Programa e Armazenar os Dados atuais do Usuário no Sistema
     elif int(opc) == 0:
-        print("Obrigado por Comprar na nossa Loja, Compre Conosco Sempre que Puder!")
+        resposta = socket_cliente.receber_decodificado()
+        print(resposta)
     else:
         print('Digite uma Opção Válida, Por Favor.')
 
