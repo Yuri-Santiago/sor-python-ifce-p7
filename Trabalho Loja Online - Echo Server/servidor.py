@@ -2,6 +2,7 @@ from produto import Produto
 from item import Item
 from usuario import Usuario
 from echo_socket import EchoSocket
+import pickle
 
 # Criando o Socket do Servidor
 socket_servidor = EchoSocket()
@@ -14,9 +15,9 @@ with open('produtos.txt', 'r') as arquivo_produtos:
     linhas = arquivo_produtos.readlines()
 produtos = [Produto(p.split('-')[0], float(p.split('-')[1])) for p in linhas]
 
-with open('usuarios.txt', 'r') as arquivo_usuarios:
-    usuarios_cadastrados = arquivo_usuarios.readlines()
-logins = {u.split('-')[1]: u.split('-')[2] for u in usuarios_cadastrados}
+with open('usuarios.pickle', 'rb') as arquivo_usuarios:
+    usuarios = pickle.load(arquivo_usuarios)
+usuario = usuarios[0]
 
 # Começo das conexão
 while True:
@@ -37,26 +38,43 @@ while True:
             resposta = 'Conta Criada com Sucesso!'
             socket_cliente.enviar(resposta)
 
-            with open('usuarios.txt', 'a') as arquivo_usuarios:
-                arquivo_usuarios.write(f'\n{nome}-{email}-{senha}-')
+            usuarios.append(usuario)
+            with open('usuarios.pickle', 'wb') as arquivo_usuarios:
+                pickle.dump(usuarios, arquivo_usuarios)
             break
 
         # Fazer Login
         elif menu == 2:
+            validacao = 0
             while True:
-                # TODO
                 email = socket_cliente.receber_decodificado()
-                senha = socket_cliente.receber_decodificado()
-                if email in logins.keys():
-                    if senha == logins[email]:
-                        resposta = 'Bem vindo!'
+                for u in usuarios:
+                    if email == u.get_email():
+                        resposta = 'Email Válido!'
                         socket_cliente.enviar(resposta)
+
+                        while True:
+                            senha = socket_cliente.receber_decodificado()
+                            if senha == u.get_senha():
+                                resposta = f'Bem vindo(a) {u.get_nome()}!'
+                                socket_cliente.enviar(resposta)
+                                usuario = u
+                                validacao = 1
+                                break
+                            else:
+                                resposta = 'Senha Incorreta, Tente Novamente.'
+                                socket_cliente.enviar(resposta)
+                        break
+                if validacao == 1:
+                    break
                 else:
-                    resposta = 'Email Não Cadastrado'
+                    resposta = 'Email Não Cadastrado, se Cadastre ou Tente Novamente.'
                     socket_cliente.enviar(resposta)
             break
+
         # Sair
-        elif menu == 3:
+        elif menu == 0:
+            usuario = usuarios[0]
             socket_cliente.fechar()
             socket_servidor.fechar()
             break
@@ -95,6 +113,7 @@ while True:
         elif opc == 4:
             resposta = usuario.get_carteira().pagar(usuario.get_compra().get_valor_compra())
             socket_cliente.enviar(resposta)
+            usuario.fechar_compra()
 
         # Adicionar dinheiro na Carteira
         elif opc == 5:
@@ -108,9 +127,13 @@ while True:
             socket_cliente.enviar(resposta)
 
         # Sair
-        elif opc == 7:
-            with open('usuarios.txt', 'a') as arquivo_usuarios:
-                arquivo_usuarios.write(str(usuario.get_carteira().get_total()))
+        elif opc == 0:
+            with open('usuarios.pickle', 'rb') as arquivo_usuarios:
+                usuarios_final = pickle.load(arquivo_usuarios)
+
+            for u in usuarios_final:
+                if usuario.get_email() == u.get_email():
+                    usuarios_final[usuarios_final.index(u)] = usuario
             break
 
     # Finaliza a Conexão

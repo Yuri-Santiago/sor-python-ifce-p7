@@ -10,10 +10,10 @@ socket_cliente.conectar_cliente_local()
 print('### Bem Vindo a Loja Online Gamer ###\nCompre seus produtos no preço mais acessível aqui!')
 
 # Parte da Verificação do Usuário
-menu = 0
+menu = -1
 while True:
     print('Você deve criar uma Conta ou Fazer Login na sua conta primeiro.\nOpção 1 - Criar a Conta.\nOpção 2 - Fazer '
-          'Login.\nOpção 3 - Sair da Loja.')
+          'Login.\nOpção 0 - Sair da Loja.')
     menu = input('Opção Escolhida: ')
     socket_cliente.enviar(menu)
 
@@ -28,27 +28,43 @@ while True:
         resposta = socket_cliente.receber_decodificado()
         print(resposta)
         break
+
     # Fazendo Login em uma Conta Existente
     elif int(menu) == 2:
-        email = input('Digite seu Email para Login: ')
-        socket_cliente.enviar(email)
-        senha = input('Digite sua Senha para Login: ')
-        socket_cliente.enviar(senha)
+        validacao = 0
+        while True:
+            email = input('Digite seu Email para Login: ')
+            socket_cliente.enviar(email)
+            resposta = socket_cliente.receber_decodificado()
+            print(resposta)
+
+            if resposta == 'Email Válido!':
+                while True:
+                    senha = input('Digite sua Senha para Login: ')
+                    socket_cliente.enviar(senha)
+                    resposta = socket_cliente.receber_decodificado()
+                    print(resposta)
+
+                    if resposta != 'Senha Incorreta, Tente Novamente.':
+                        validacao = 1
+                        break
+            if validacao == 1:
+                break
         break
 
     # Saindo do Menu
-    elif int(menu) == 3:
+    elif int(menu) == 0:
         print("Obrigado por entrar na Loja, Compre quando Quiser!")
     else:
         print('Digite uma Opção Válida, Por Favor.')
 
 # Dentro da Loja
-opc = 0
-while int(opc) != 7:
+opc = -1
+while int(opc) != 0:
 
     print("\nDigite o número da opção que você desejar: \nOpção 1 - Mostrar os Produtos da loja \nOpção 2 - Adicionar "
           "Produto no Carrinho \nOpção 3 - Listar os Itens do Carrinho \nOpção 4 - Finalizar a Compra \nOpção 5 - "
-          "Adicionar dinheiro na Carteira \nOpção 6 - Dinheiro total na Carteira \nOpção 7 - Deslogar")
+          "Adicionar dinheiro na Carteira \nOpção 6 - Dinheiro total na Carteira \nOpção 0 - Deslogar")
     opc = input('Opção Escolhida: ')
     socket_cliente.enviar(opc)
 
@@ -90,7 +106,7 @@ while int(opc) != 7:
         print(resposta)
 
     # Deslogar
-    elif int(opc) == 7:
+    elif int(opc) == 0:
         print("Obrigado por Comprar na nossa Loja, Compre Conosco Sempre que Puder!")
     else:
         print('Digite uma Opção Válida, Por Favor.')

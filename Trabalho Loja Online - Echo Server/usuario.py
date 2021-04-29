@@ -30,3 +30,6 @@ class Usuario:
 
     def get_compra(self):
         return self.compra
+
+    def fechar_compra(self):
+        self.compra = Compra()
