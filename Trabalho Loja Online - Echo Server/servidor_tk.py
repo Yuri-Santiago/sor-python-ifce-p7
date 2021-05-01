@@ -28,7 +28,7 @@ while True:
     # Parte do Usuário
     while True:
         menu = socket_cliente.receber_inteiro()
-
+        # Entrar em uma Conta
         if menu == 1:
             email = socket_cliente.receber_decodificado()
             senha = socket_cliente.receber_decodificado()
@@ -44,12 +44,37 @@ while True:
                             resposta = f'Bem vindo(a) {u.get_nome().split()[0]}!'
                             socket_cliente.enviar(resposta)
                             usuario = u
+                            break
                         else:  # Senha Errada
                             resposta = 'Senha Incorreta.\nTente Novamente.'
                             socket_cliente.enviar(resposta)
                 if validacao == 0:  # Email não Cadastrado
                     resposta = 'Email Não Cadastrado.\nCadastre ou Tente Novamente.'
                     socket_cliente.enviar(resposta)
+                else:
+                    break
+        # Criar uma Conta
+        if menu == 2:
+            nome = socket_cliente.receber_decodificado()
+            email = socket_cliente.receber_decodificado()
+            senha = socket_cliente.receber_decodificado()
+            if nome == ' ' or email == ' ' or senha == ' ':
+                resposta = 'Digite Nome, Email\ne Senha.'
+                socket_cliente.enviar(resposta)
+            else:
+                emails = [u.get_email() for u in usuarios]  # Lista com os emails cadastrados
+                if email in emails:
+                    resposta = 'Email já Cadastrado. Por Favor, Tente Novamente.'
+                    socket_cliente.enviar(resposta)
+                else:
+                    resposta = f'Conta Criada com Sucesso! \nBem vindo(a) {nome.split()[0]}!'
+                    socket_cliente.enviar(resposta)
+
+                    usuario = Usuario(nome, email, senha)
+                    usuarios.append(usuario)
+                    with open('usuarios.pickle', 'wb') as arquivo_usuarios:
+                        pickle.dump(usuarios, arquivo_usuarios)
+                    break
 
     # Finaliza a Conexão
     socket_cliente.fechar()
