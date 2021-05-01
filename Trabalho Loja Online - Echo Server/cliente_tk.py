@@ -44,24 +44,23 @@ email_entry = Entry(inicio, bg='white', font='Montserrat 15', bd=2, relief='soli
 senha_entry = Entry(inicio, bg='white', font='Montserrat 15', bd=2, relief='solid')
 nome_entry = Entry(inicio, bg='white', font='Montserrat 15', bd=2, relief='solid')
 # Buttons
-entrar = Button(inicio, text='Entrar', bg=cor_azul, font='Montserrat 15 bold', width=24, padx=5, command=lambda:
-    enviar_login('1'))
+entrar = Button(inicio, text='Entrar', bg=cor_azul, font='Montserrat 15 bold', width=24, padx=5,
+                command=lambda: enviar_login('1'))
 cadastrar = Button(inicio, text='Cadastrar', bg=cor_azul, font='Montserrat 11 bold', command=lambda: tela_cadastro())
 
 
 # Funções do Programa
+def enviar_dado(dado):
+    if bool(dado.get()):
+        socket_cliente.enviar(dado.get().strip())
+    else:
+        socket_cliente.enviar(' ')
 
 
 def enviar_login(opcao):  # Função de Enviar o Login
     socket_cliente.enviar(opcao)
-    if bool(email_entry.get()):
-        socket_cliente.enviar(email_entry.get().strip())
-    else:
-        socket_cliente.enviar(' ')
-    if bool(senha_entry.get()):
-        socket_cliente.enviar(senha_entry.get().strip())
-    else:
-        socket_cliente.enviar(' ')
+    enviar_dado(email_entry)
+    enviar_dado(senha_entry)
     resposta = socket_cliente.receber_decodificado()
     resposta_label['text'] = resposta
     resposta_label.place(x=45, y=275)
@@ -69,23 +68,15 @@ def enviar_login(opcao):  # Função de Enviar o Login
 
 def enviar_cadastro(opcao):
     socket_cliente.enviar(opcao)
-    if bool(nome_entry.get()):
-        socket_cliente.enviar(nome_entry.get().strip())
-    else:
-        socket_cliente.enviar(' ')
-    if bool(email_entry.get()):
-        socket_cliente.enviar(email_entry.get().strip())
-    else:
-        socket_cliente.enviar(' ')
-    if bool(senha_entry.get()):
-        socket_cliente.enviar(senha_entry.get().strip())
-    else:
-        socket_cliente.enviar(' ')
+    enviar_dado(nome_entry)
+    enviar_dado(email_entry)
+    enviar_dado(senha_entry)
     resposta = socket_cliente.receber_decodificado()
     resposta_label['text'] = resposta
     resposta_label.place(x=450, y=275)
 
-def tela_inicial(): # Tela Inicial
+
+def tela_inicial():  # Tela Inicial
     nome_entry.place(x=1000, y=1000)
     nome_label.place(x=1000, y=1000)
     resposta_label.place(x=1000, y=1000)
@@ -104,7 +95,8 @@ def tela_inicial(): # Tela Inicial
     cadastrar['command'] = lambda: tela_cadastro()
     cadastrar.place(x=155, y=330)
 
-def tela_cadastro():# Função da Tela de Cadastro
+
+def tela_cadastro():  # Função da Tela de Cadastro
     resposta_label.place(x=1000, y=1000)
     logo_imagem.place(x=-4, y=-5)
     nome_loja.place(x=450, y=72)
@@ -123,8 +115,8 @@ def tela_cadastro():# Função da Tela de Cadastro
     cadastrar['text'] = 'Voltar'
     cadastrar.place(x=580, y=330)
     cadastrar['command'] = lambda: tela_inicial()
-# Começo do Programa
 
-print(email_entry.keys())
+
+# Começo do Programa
 tela_inicial()
 tela.mainloop()
