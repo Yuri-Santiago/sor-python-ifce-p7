@@ -3,7 +3,7 @@ from compra import Compra
 
 
 class Usuario:
-    def __init__(self, nome, email, senha, carteira=0):
+    def __init__(self, nome='', email='', senha='', carteira=0):
         self.nome = nome
         self.email = email
         self.senha = senha

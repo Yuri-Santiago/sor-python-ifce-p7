@@ -14,5 +14,5 @@ class Carteira:
     def adicionar(self, valor):
         if valor > 0:
             self.total += valor
-            return 'Valor Adicionado na Carteira.\nO Valor Atual é: %.2f' % (self.total)
+            return 'Valor: %.2f R$ \nAdicionado na Carteira.' % valor
         return 'Valor Inválido'

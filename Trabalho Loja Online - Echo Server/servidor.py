@@ -127,7 +127,7 @@ while True:
 
         # Adicionar dinheiro na Carteira
         elif opc == 5:
-            valor = socket_cliente.receber_inteiro()
+            valor = socket_cliente.receber_float()
             resposta = usuario.get_carteira().adicionar(valor)
             socket_cliente.enviar(resposta)
 

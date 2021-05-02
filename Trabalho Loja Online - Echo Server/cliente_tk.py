@@ -3,7 +3,10 @@ from tkinter import *
 from PIL import ImageTk, Image
 import pickle
 from tkinter import messagebox
+from usuario import Usuario
 
+# Criando o Usuario
+usuario = Usuario()
 # Criando o Socket do Cliente
 socket_cliente = EchoSocket()
 
@@ -29,12 +32,12 @@ user = Frame(tela).pack()
 imagens_textos = ['imagens/logo.png', 'imagens/mouse.png', 'imagens/teclado.png', 'imagens/headset.png',
                   'imagens/monitor.png', 'imagens/playstation.png', 'imagens/notebook.png', 'imagens/cadeira.png',
                   'imagens/celular.png', 'imagens/controle.png', 'imagens/xbox.png', 'imagens/loginho.png',
-                  'imagens/usuario.png', 'imagens/carrinho.png', 'imagens/casa.png']
+                  'imagens/usuario.png', 'imagens/carrinho.png', 'imagens/casa.png', 'imagens/logoff.png']
 imagem = [ImageTk.PhotoImage(Image.open(texto)) for texto in imagens_textos]
 
 # Cores
 cor_fundo = '#0061bc'
-cor_laranja = '#ff9900'
+cor_laranja = '#ff6600'
 cor_azul = '#005e80'
 
 # Primeira Tela
@@ -53,7 +56,7 @@ senha_entry = Entry(inicio, bg='white', font='Montserrat 15', bd=2, relief='soli
 nome_entry = Entry(inicio, bg='white', font='Montserrat 15', bd=2, relief='solid')
 # Buttons
 entrar = Button(inicio, text='Entrar', bg=cor_azul, font='Montserrat 15 bold', width=24, padx=5,
-                command=lambda: enviar_login('1'))
+                command=lambda: enviar_login())
 cadastrar = Button(inicio, text='Cadastrar', bg=cor_azul, font='Montserrat 11 bold', command=lambda: tela_cadastro())
 
 # Segunda Tela
@@ -64,8 +67,8 @@ botao = [Button(loja, image=imagem[x], bg='white', bd=4, relief='solid') for x i
 logo_loja = Label(loja, image=imagem[11], bg=cor_fundo)
 gamer_loja = Label(loja, text='Gamer Store', bg=cor_laranja, font='Impact 16 bold', bd=10, relief='raised', width=15)
 usuario_butao = Button(loja, image=imagem[12], bg='white', bd=4, relief='solid',)
-usuario_label = Label(loja, bg=cor_azul, font='Montserrat 16 bold', width=12)
-carteira_label = Label(loja, bg=cor_azul, font='Montserrat 16 bold', width=12)
+usuario_label = Label(loja, bg=cor_azul, font='Montserrat 16 bold', width=12, bd=2, relief='solid')
+carteira_label = Label(loja, bg=cor_azul, font='Montserrat 16 bold', width=12, bd=2, relief='solid')
 carrinho_butao = Button(loja, image=imagem[13], bg='white', bd=4, relief='solid')
 carrinho_label = Label(loja, bg=cor_fundo, font='Montserrat 16 bold')
 carinho_finalizar = Label(loja, text='Finalizar', bg=cor_fundo, font='Montserrat 16 bold')
@@ -76,7 +79,7 @@ produto = [Label(loja, text=t, bg=cor_fundo, font='Montserrat 12 bold') for t in
 
 # Terceira Tela
 # Labels
-dados = Label(user, text='Dados', bg='white', font='Montserrat 16 bold', anchor=N, width=25, height=13, bd=4, relief='solid')
+dados = Label(user, text='Dados', bg=cor_laranja, font='Montserrat 16 bold', anchor=N, width=25, height=13, bd=4, relief='solid')
 nome_dado = Label(user, bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
 email_dado = Label(user, bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
 cpf_dado = Label(user, text='CPF: 123-456-789-10', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
@@ -85,11 +88,58 @@ endereco_dado = Label(user, text='Enderaço: Rua X, 00', bg=cor_azul, font='Mont
 cidade_dado = Label(user, text='Cidade: Fortaleza, Ceará', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
 cartao_dado = Label(user, text='Cartão 1: XXXX-XXXX-XXXX-XXXX', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
 cartao2_dado = Label(user, text='Cartão 2: XXXX-XXXX-XXXX-XXXX', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
+carteira_dados = Label(user, text='Carteira', bg=cor_laranja, font='Montserrat 16 bold', anchor=N, width=25, height=8, bd=4, relief='solid')
+valor_dados = Label(user, bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
+valor_label = Label(user, text='Valor Desejado', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
+resposta_valor =Label(inicio, font='Verdana 12 italic', bg=cor_laranja, width=31, height=2)
+casa_label = Label(loja, text='Voltar pra \nTela Inicial', bg=cor_fundo, font='Montserrat 16 bold', height=2)
+logoff_label = Label(loja, text='Sair da\nConta', bg=cor_fundo, font='Montserrat 16 bold', height=2)
 # Buttons
 senha_dado = Button(user, text='Alterar Senha', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
-casa_botao = Button(user, image=imagem[14], bg='white', bd=4, relief='solid')
+casa_botao = Button(user, image=imagem[14], bg='white', bd=4, relief='solid', command=lambda: tela_loja())
+valor_botao = Button(user, text='Adicionar Valor', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
+logoff_botao = Button(user, image=imagem[14], bg='white', bd=4, relief='solid', command=lambda: tela_inicial())
+# Entrys
+valor_entry = Entry(inicio, bg='white', font='Montserrat 12', bd=4, relief='solid')
 # Funções do Programa
 
+def mover_tudo():
+    nome_entry.place(x=1000, y=1000)
+    nome_label.place(x=1000, y=1000)
+    resposta_label.place(x=1000, y=1000)
+    nome_loja.place(x=1000, y=1000)
+    email_label.place(x=1000, y=1000)
+    senha_label.place(x=1000, y=1000)
+    email_entry.place(x=1000, y=1000)
+    senha_entry.place(x=1000, y=1000)
+    entrar.place(x=1000, y=1000)
+    logo_imagem.place(x=1000, y=1000)
+    cadastrar.place(x=1000, y=1000)
+    dados.place(x=1000, y=1000)
+    nome_dado.place(x=1000, y=1000)
+    email_dado.place(x=1000, y=1000)
+    cpf_dado.place(x=1000, y=1000)
+    data_dado.place(x=1000, y=1000)
+    endereco_dado.place(x=1000, y=1000)
+    cidade_dado.place(x=1000, y=1000)
+    cartao_dado.place(x=1000, y=1000)
+    cartao2_dado.place(x=1000, y=1000)
+    senha_dado.place(x=1000, y=1000)
+    carteira_dados.place(x=1000, y=1000)
+    valor_dados.place(x=1000, y=1000)
+    valor_label.place(x=1000, y=1000)
+    valor_entry.place(x=1000, y=1000)
+    valor_entry.delete(0, END)
+    valor_botao.place(x=1000, y=1000)
+    resposta_valor.place(x=1000, y=1000)
+    casa_botao.place(x=1000, y=1000)
+    casa_label.place(x=1000, y=1000)
+    for x in botao:
+        x.place(x=1000, y=1000)
+    for y in produto:
+        y.place(x=1000, y=1000)
+    logoff_botao.place(x=1000, y=1000)
+    logoff_label.place(x=1000, y=1000)
 
 def enviar_dado(dado):
     if bool(dado.get()):
@@ -98,19 +148,20 @@ def enviar_dado(dado):
         socket_cliente.enviar(' ')
 
 
-def enviar_login(opcao):  # Função de Enviar o Login
-    socket_cliente.enviar(opcao)
+def enviar_login():  # Função de Enviar o Login
+    socket_cliente.enviar('1')
     enviar_dado(email_entry)
     enviar_dado(senha_entry)
     resposta = socket_cliente.receber_decodificado()
     resposta_label['text'] = resposta
     resposta_label.place(x=45, y=275)
     if resposta == 'Bem vindo':
+        atualizar_usuario()
         tela_loja()
 
 
-def enviar_cadastro(opcao):
-    socket_cliente.enviar(opcao)
+def enviar_cadastro():
+    socket_cliente.enviar('2')
     enviar_dado(nome_entry)
     enviar_dado(email_entry)
     enviar_dado(senha_entry)
@@ -118,14 +169,38 @@ def enviar_cadastro(opcao):
     resposta_label['text'] = resposta
     resposta_label.place(x=450, y=275)
     if resposta == 'Conta criada':
+        atualizar_usuario()
         tela_loja()
 
 
+def enviar_valor():
+    socket_cliente.enviar('3')
+    try:
+        float(valor_entry.get())
+        socket_cliente.enviar(valor_entry.get())
+    except:
+        socket_cliente.enviar('-1')
+    valor_entry.delete(0, END)
+    resposta = socket_cliente.receber_decodificado()
+    resposta_valor['text'] = resposta
+    resposta_valor.place(x=435, y=245)
+    atualizar_usuario()
+    atualizar_valores()
+
+def atualizar_usuario():
+    global usuario
+    usuario_byte = socket_cliente.receber_bytes()
+    usuario = pickle.loads(usuario_byte)
+
+def atualizar_valores():
+    valor_dados['text'] = 'Valor Total na Carteira: %.2f R$' % usuario.get_carteira().get_total()
+    valor_dados.place(x=435, y=140)
+    carteira_label['text'] = '%.2f R$' % usuario.get_carteira().get_total()
+    carteira_label.place(x=530, y=47)
+
 def tela_inicial():  # Tela Inicial
     # Movendo coisas pra longe
-    nome_entry.place(x=1000, y=1000)
-    nome_label.place(x=1000, y=1000)
-    resposta_label.place(x=1000, y=1000)
+    mover_tudo()
 
     nome_loja.place(x=45, y=100)
     email_label.place(x=45, y=170)
@@ -135,7 +210,7 @@ def tela_inicial():  # Tela Inicial
     senha_entry.delete(0, END)
     senha_entry.place(x=125, y=198)
     entrar['text'] = 'Entrar'
-    entrar['command'] = lambda: enviar_login('1')
+    entrar['command'] = lambda: enviar_login()
     entrar.place(x=45, y=230)
     logo_imagem.place(x=400, y=-5)
     cadastrar['text'] = 'Cadastrar'
@@ -145,7 +220,7 @@ def tela_inicial():  # Tela Inicial
 
 def tela_cadastro():  # Função da Tela de Cadastro
     # Movendo coisas pra longe
-    resposta_label.place(x=1000, y=1000)
+    mover_tudo()
 
     logo_imagem.place(x=-4, y=-5)
     nome_loja.place(x=450, y=72)
@@ -159,29 +234,30 @@ def tela_cadastro():  # Função da Tela de Cadastro
     senha_entry.delete(0, END)
     senha_entry.place(x=530, y=198)
     entrar['text'] = 'Cadastrar'
-    entrar['command'] = lambda: enviar_cadastro('2')
+    entrar['command'] = lambda: enviar_cadastro()
     entrar.place(x=450, y=230)
     cadastrar['text'] = 'Voltar'
     cadastrar.place(x=580, y=330)
     cadastrar['command'] = lambda: tela_inicial()
 
+def menu_cima(): # Tela de Cima
+    logo_loja.place(x=26, y=3)
+    gamer_loja.place(x=110, y=17)
+    usuario_butao.place(x=700, y=3)
+    usuario_butao['command'] = lambda: tela_usuario()
+    usuario_label['text'] = usuario.get_nome().split()[0]
+    usuario_label.place(x=530, y=17)
+    carteira_label['text'] = '%.2f R$' % usuario.get_carteira().get_total()
+    carteira_label.place(x=530, y=47)
+    carrinho_butao.place(x=315, y=3)
+    carrinho_label['text'] = '%.2f R$' % usuario.get_compra().get_valor_compra()
+    carrinho_label.place(x=400, y=47)
+    carinho_finalizar.place(x=400, y=17)
 
 def tela_loja():
-    # Recebendo o Usuario
-    usuario_byte = socket_cliente.receber_bytes()
-    usuario = pickle.loads(usuario_byte)
     # Movendo coisas pra longe
-    nome_entry.place(x=1000, y=1000)
-    nome_label.place(x=1000, y=1000)
-    resposta_label.place(x=1000, y=1000)
-    nome_loja.place(x=1000, y=1000)
-    email_label.place(x=1000, y=1000)
-    senha_label.place(x=1000, y=1000)
-    email_entry.place(x=1000, y=1000)
-    senha_entry.place(x=1000, y=1000)
-    entrar.place(x=1000, y=1000)
-    logo_imagem.place(x=1000, y=1000)
-    cadastrar.place(x=1000, y=1000)
+    mover_tudo()
+    menu_cima()
 
     # Tela
     botao[0].place(x=26, y=100)
@@ -205,26 +281,13 @@ def tela_loja():
     produto[8].place(x=497, y=415)
     produto[9].place(x=658, y=415)
 
-    logo_loja.place(x=26, y=3)
-    gamer_loja.place(x=110, y=17)
-    usuario_butao.place(x=700, y=3)
-    usuario_butao['command'] = lambda: tela_usuario(usuario)
-    usuario_label['text'] = usuario.get_nome().split()[0]
-    usuario_label.place(x=530, y=17)
-    carteira_label['text'] = '%.2f R$' % usuario.get_carteira().get_total()
-    carteira_label.place(x=530, y=47)
-    carrinho_butao.place(x=315, y=3)
-    carrinho_label['text'] = '%.2f R$' % usuario.get_compra().get_valor_compra()
-    carrinho_label.place(x=400, y=47)
-    carinho_finalizar.place(x=400, y=17)
-    messagebox.showinfo(title='Login Bem Sucedido', message=f'Bem Vindo {usuario.get_nome()}!')
+    #messagebox.showinfo(title='Login Bem Sucedido', message=f'Bem Vindo {usuario.get_nome()}!')
 
 
-def tela_usuario(usuario):
-    for x in botao:
-        x.place(x=1000, y=1000)
-    for y in produto:
-        y.place(x=1000, y=1000)
+def tela_usuario():
+    mover_tudo()
+    menu_cima()
+    # Dados
     dados.place(x=26, y=100)
     nome_dado['text'] = f'Nome: {usuario.get_nome()}'
     nome_dado.place(x=35, y=140)
@@ -237,7 +300,18 @@ def tela_usuario(usuario):
     cartao_dado.place(x=35, y=320)
     cartao2_dado.place(x=35, y=350)
     senha_dado.place(x=130, y=380)
+    # Carteira
+    carteira_dados.place(x=426, y=100)
+    valor_dados['text'] = 'Valor Total na Carteira: %.2f R$' % usuario.get_carteira().get_total()
+    valor_dados.place(x=435, y=140)
+    valor_label.place(x=435, y=170)
+    valor_entry.place(x=561, y=170)
+    valor_botao['command'] = lambda: enviar_valor()
+    valor_botao.place(x=530, y=200)
+    # Voltar
     casa_botao.place(x=700, y=350)
+    casa_label.place(x=590, y=360)
+
 # Começo do Programa
 tela_inicial()
 tela.mainloop()

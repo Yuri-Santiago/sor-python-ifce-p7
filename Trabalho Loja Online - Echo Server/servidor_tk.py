@@ -66,18 +66,26 @@ while True:
             else:
                 emails = [u.get_email() for u in usuarios]  # Lista com os emails cadastrados
                 if email in emails:
-                    resposta = 'Email já Cadastrado. Por Favor, Tente Novamente.'
+                    resposta = 'Email já Cadastrado. \nPor Favor, Tente Novamente.'
                     socket_cliente.enviar(resposta)
                 else:
                     resposta = 'Conta criada'
                     socket_cliente.enviar(resposta)
-
-                    usuario = Usuario(nome, email, senha)
+                    nome_correto = nome.title().strip()
+                    usuario = Usuario(nome_correto, email, senha)
                     usuarios.append(usuario)
                     with open('usuarios.pickle', 'wb') as arquivo_usuarios:
                         pickle.dump(usuarios, arquivo_usuarios)
                     usuario_byte = pickle.dumps(usuario)
                     socket_cliente.enviar_bytes(usuario_byte)
+        # Adicionar Valor na Careira
+        if menu == 3:
+            valor = socket_cliente.receber_float()
+            resposta = usuario.get_carteira().adicionar(valor)
+            socket_cliente.enviar(resposta)
+            usuario_byte = pickle.dumps(usuario)
+            socket_cliente.enviar_bytes(usuario_byte)
+
 
     # Finaliza a Conexão
     socket_cliente.fechar()
