@@ -3,7 +3,7 @@ from tkinter import *
 from PIL import ImageTk, Image
 import pickle
 from tkinter import messagebox
-import time
+
 # Criando o Socket do Cliente
 socket_cliente = EchoSocket()
 
@@ -20,18 +20,17 @@ tela.iconbitmap('imagens/logo.ico')
 tela['bg'] = '#0061bc'
 
 # Criando Frames
-inicio = Frame(tela).pack(side=TOP)
-loja = Frame(tela).pack(side=BOTTOM)
+inicio = Frame(tela).pack()
+loja = Frame(tela).pack()
+user = Frame(tela).pack()
 
 # Criando Objetos
 # Carregando as Imagens para a Lista
-imagem = [ImageTk.PhotoImage(Image.open('imagens/logo.png')), ImageTk.PhotoImage(Image.open('imagens/mouse.png')),
-          ImageTk.PhotoImage(Image.open('imagens/teclado.png')), ImageTk.PhotoImage(Image.open('imagens/headset.png')),
-          ImageTk.PhotoImage(Image.open('imagens/monitor.png')), ImageTk.PhotoImage(Image.open('imagens/playstation.png')),
-          ImageTk.PhotoImage(Image.open('imagens/notebook.png')), ImageTk.PhotoImage(Image.open('imagens/cadeira.png')),
-          ImageTk.PhotoImage(Image.open('imagens/celular.png')), ImageTk.PhotoImage(Image.open('imagens/controle.png')),
-          ImageTk.PhotoImage(Image.open('imagens/xbox.png')), ImageTk.PhotoImage(Image.open('imagens/loginho.png')),
-          ImageTk.PhotoImage(Image.open('imagens/usuario.png')), ImageTk.PhotoImage(Image.open('imagens/carrinho.png'))]
+imagens_textos = ['imagens/logo.png', 'imagens/mouse.png', 'imagens/teclado.png', 'imagens/headset.png',
+                  'imagens/monitor.png', 'imagens/playstation.png', 'imagens/notebook.png', 'imagens/cadeira.png',
+                  'imagens/celular.png', 'imagens/controle.png', 'imagens/xbox.png', 'imagens/loginho.png',
+                  'imagens/usuario.png', 'imagens/carrinho.png', 'imagens/casa.png']
+imagem = [ImageTk.PhotoImage(Image.open(texto)) for texto in imagens_textos]
 
 # Cores
 cor_fundo = '#0061bc'
@@ -59,12 +58,12 @@ cadastrar = Button(inicio, text='Cadastrar', bg=cor_azul, font='Montserrat 11 bo
 
 # Segunda Tela
 # Buttons
-botao = [Button(loja, image = imagem[x], bg='white', bd=4, relief='solid') for x in range(1,11)]
+botao = [Button(loja, image=imagem[x], bg='white', bd=4, relief='solid') for x in range(1, 11)]
 
 # Labels
 logo_loja = Label(loja, image=imagem[11], bg=cor_fundo)
 gamer_loja = Label(loja, text='Gamer Store', bg=cor_laranja, font='Impact 16 bold', bd=10, relief='raised', width=15)
-usuario_butao = Button(loja, image=imagem[12], bg='white', bd=4, relief='solid')
+usuario_butao = Button(loja, image=imagem[12], bg='white', bd=4, relief='solid',)
 usuario_label = Label(loja, bg=cor_azul, font='Montserrat 16 bold', width=12)
 carteira_label = Label(loja, bg=cor_azul, font='Montserrat 16 bold', width=12)
 carrinho_butao = Button(loja, image=imagem[13], bg='white', bd=4, relief='solid')
@@ -75,7 +74,23 @@ textos_recebidos = socket_cliente.receber_bytes()
 textos_produtos = pickle.loads(textos_recebidos)
 produto = [Label(loja, text=t, bg=cor_fundo, font='Montserrat 12 bold') for t in textos_produtos]
 
+# Terceira Tela
+# Labels
+dados = Label(user, text='Dados', bg='white', font='Montserrat 16 bold', anchor=N, width=25, height=13, bd=4, relief='solid')
+nome_dado = Label(user, bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
+email_dado = Label(user, bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
+cpf_dado = Label(user, text='CPF: 123-456-789-10', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
+data_dado = Label(user, text='Nascimento: 01/01/1901', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
+endereco_dado = Label(user, text='Enderaço: Rua X, 00', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
+cidade_dado = Label(user, text='Cidade: Fortaleza, Ceará', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
+cartao_dado = Label(user, text='Cartão 1: XXXX-XXXX-XXXX-XXXX', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
+cartao2_dado = Label(user, text='Cartão 2: XXXX-XXXX-XXXX-XXXX', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
+# Buttons
+senha_dado = Button(user, text='Alterar Senha', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid')
+casa_botao = Button(user, image=imagem[14], bg='white', bd=4, relief='solid')
 # Funções do Programa
+
+
 def enviar_dado(dado):
     if bool(dado.get()):
         socket_cliente.enviar(dado.get().strip())
@@ -92,7 +107,6 @@ def enviar_login(opcao):  # Função de Enviar o Login
     resposta_label.place(x=45, y=275)
     if resposta == 'Bem vindo':
         tela_loja()
-
 
 
 def enviar_cadastro(opcao):
@@ -194,6 +208,7 @@ def tela_loja():
     logo_loja.place(x=26, y=3)
     gamer_loja.place(x=110, y=17)
     usuario_butao.place(x=700, y=3)
+    usuario_butao['command'] = lambda: tela_usuario(usuario)
     usuario_label['text'] = usuario.get_nome().split()[0]
     usuario_label.place(x=530, y=17)
     carteira_label['text'] = '%.2f R$' % usuario.get_carteira().get_total()
@@ -202,6 +217,27 @@ def tela_loja():
     carrinho_label['text'] = '%.2f R$' % usuario.get_compra().get_valor_compra()
     carrinho_label.place(x=400, y=47)
     carinho_finalizar.place(x=400, y=17)
+    messagebox.showinfo(title='Login Bem Sucedido', message=f'Bem Vindo {usuario.get_nome()}!')
+
+
+def tela_usuario(usuario):
+    for x in botao:
+        x.place(x=1000, y=1000)
+    for y in produto:
+        y.place(x=1000, y=1000)
+    dados.place(x=26, y=100)
+    nome_dado['text'] = f'Nome: {usuario.get_nome()}'
+    nome_dado.place(x=35, y=140)
+    email_dado['text'] = f'Email: {usuario.get_email()}'
+    email_dado.place(x=35, y=170)
+    cpf_dado.place(x=35, y=200)
+    data_dado.place(x=35, y=230)
+    endereco_dado.place(x=35, y=260)
+    cidade_dado.place(x=35, y=290)
+    cartao_dado.place(x=35, y=320)
+    cartao2_dado.place(x=35, y=350)
+    senha_dado.place(x=130, y=380)
+    casa_botao.place(x=700, y=350)
 # Começo do Programa
 tela_inicial()
 tela.mainloop()
