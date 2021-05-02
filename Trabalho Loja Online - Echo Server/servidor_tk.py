@@ -24,6 +24,8 @@ while True:
     # Estabelece uma Conexão
     socket_cliente, endereco = socket_servidor.aceitar_cliente()
     print("Conexão Estabelecida com: %s" % str(endereco))
+    textos_produtos = pickle.dumps([p.get_nome() for p in produtos])
+    socket_cliente.enviar_bytes(textos_produtos)
 
     # Parte do Usuário
     while True:
@@ -41,9 +43,11 @@ while True:
                     if email == u.get_email():  # Verificar se o Email está Cadastrado
                         validacao = 1
                         if senha == u.get_senha():  # Verificar se a Senha está Correta
-                            resposta = f'Bem vindo(a) {u.get_nome().split()[0]}!'
+                            resposta = 'Bem vindo'
                             socket_cliente.enviar(resposta)
                             usuario = u
+                            usuario_byte = pickle.dumps(usuario)
+                            socket_cliente.enviar_bytes(usuario_byte)
                             break
                         else:  # Senha Errada
                             resposta = 'Senha Incorreta.\nTente Novamente.'
@@ -51,8 +55,6 @@ while True:
                 if validacao == 0:  # Email não Cadastrado
                     resposta = 'Email Não Cadastrado.\nCadastre ou Tente Novamente.'
                     socket_cliente.enviar(resposta)
-                else:
-                    break
         # Criar uma Conta
         if menu == 2:
             nome = socket_cliente.receber_decodificado()
@@ -67,14 +69,15 @@ while True:
                     resposta = 'Email já Cadastrado. Por Favor, Tente Novamente.'
                     socket_cliente.enviar(resposta)
                 else:
-                    resposta = f'Conta Criada com Sucesso! \nBem vindo(a) {nome.split()[0]}!'
+                    resposta = 'Conta criada'
                     socket_cliente.enviar(resposta)
 
                     usuario = Usuario(nome, email, senha)
                     usuarios.append(usuario)
                     with open('usuarios.pickle', 'wb') as arquivo_usuarios:
                         pickle.dump(usuarios, arquivo_usuarios)
-                    break
+                    usuario_byte = pickle.dumps(usuario)
+                    socket_cliente.enviar_bytes(usuario_byte)
 
     # Finaliza a Conexão
     socket_cliente.fechar()

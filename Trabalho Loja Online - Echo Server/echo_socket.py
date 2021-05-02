@@ -25,8 +25,13 @@ class EchoSocket:
     def receber_decodificado(self):
         return self.socket.recv(1024).decode('utf-8')
 
+    def receber_bytes(self):
+        return self.socket.recv(1024)
+
     def enviar(self, pacote):
         self.socket.send(pacote.encode('utf-8'))
 
+    def enviar_bytes(self, pacote):
+        self.socket.send(pacote)
     def fechar(self):
         self.socket.close()
