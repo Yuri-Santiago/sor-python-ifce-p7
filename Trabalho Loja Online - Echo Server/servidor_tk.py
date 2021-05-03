@@ -85,6 +85,21 @@ while True:
             socket_cliente.enviar(resposta)
             usuario_byte = pickle.dumps(usuario)
             socket_cliente.enviar_bytes(usuario_byte)
+        # Adicionar Item no Carrinho
+        if menu == 4:
+            id_produto = socket_cliente.receber_inteiro()
+            quantidade = socket_cliente.receber_inteiro()
+            if quantidade > 0:
+                item = Item(produtos[id_produto], quantidade)
+                usuario.get_compra().add_item(item)
+                usuario_byte = pickle.dumps(usuario)
+                socket_cliente.enviar_bytes(usuario_byte)
+                resposta = 'Item Adicionado ao Carrinho com Sucesso!'
+                socket_cliente.enviar(resposta)
+            else:
+                resposta = 'Quantidade Inválida!'
+                socket_cliente.enviar(resposta)
+        # Sair
         if menu == 9:
             with open('usuarios.pickle', 'rb') as arquivo_usuarios:
                 usuarios_final = pickle.load(arquivo_usuarios)

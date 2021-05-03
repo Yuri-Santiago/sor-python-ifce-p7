@@ -1,9 +1,8 @@
 from echo_socket import EchoSocket
+from usuario import Usuario
 from tkinter import *
 from PIL import ImageTk, Image
 import pickle
-from tkinter import messagebox
-from usuario import Usuario
 
 # Criando o Usuario
 usuario = Usuario()
@@ -71,6 +70,7 @@ cadastrar = Button(inicio, text='Cadastrar', bg=cor_azul, font='Montserrat 11 bo
 def definir_numero(button, numero):
     button['command'] = lambda: tela_comprar(numero)
 
+
 # Buttons
 botao = [Button(loja, image=imagem[x], bg='white', bd=4, relief='solid') for x in range(10)]
 for b in range(10):
@@ -83,8 +83,8 @@ usuario_butao = Button(loja, image=imagem[12], bg='white', bd=4, relief='solid',
 usuario_label = Label(loja, bg=cor_azul, font='Montserrat 16 bold', width=12, bd=2, relief='solid')
 carteira_label = Label(loja, bg=cor_azul, font='Montserrat 16 bold', width=12, bd=2, relief='solid')
 carrinho_butao = Button(loja, image=imagem[13], bg='white', bd=4, relief='solid')
-carrinho_label = Label(loja, bg=cor_fundo, font='Montserrat 16 bold')
-carinho_finalizar = Label(loja, text='Finalizar', bg=cor_fundo, font='Montserrat 16 bold')
+carrinho_label = Label(loja, bg=cor_fundo, font='Montserrat 14 bold', width=10, anchor=W)
+carinho_finalizar = Label(loja, text='Carrinho', bg=cor_fundo, font='Montserrat 14 bold', width=10, anchor=W)
 # Recebendo todos os Nomes Pelo Servidor
 produtos_recebidos = socket_cliente.receber_bytes()
 produtos = pickle.loads(produtos_recebidos)
@@ -122,12 +122,12 @@ valor_entry = Entry(user, bg='white', font='Montserrat 12', bd=2, relief='solid'
 # Quarta Tela
 imagens_produtos = [Label(compra, image=imagem[x], bg='white', width=300, height=300, bd=4, relief='solid') for x in
                     range(16, 26)]
-textos_loja = ['Mouse Gamer excepcional para sues games de FPS,\nquem gosta de jogar no PC, precisa de um mouse gamer\n'
-               'rápido e que correspondeao jogador. Ele é \ndiferente do mouse comum e faz toda diferença na hora H.',
+textos_loja = ['Mouse Gamer excepcional para seus games de FPS,\nquem gosta de jogar no PC, precisa de um mouse gamer\n'
+               'rápido e que corresponde ao jogador. Ele é \ndiferente do mouse comum e faz toda diferença na hora H.',
                'Ter um Teclado Gamer vai deixar seus jogos\nmuito mais divertidos, quem não precisa de luzinhas RGB\n'
                'para se exibir pros amigos não é mesmo. E o \nbarulho das teclas mecânicas com certeza é mais gostoso.',
                'Para deixar a qualidade de som do seu jogo ainda\nmais real e potente. Vale a pena adquirir o Headset\n'
-               'Gamer! E o legal é que ele vem com um microfone\ntambém pra você poder conversar com outros jogadores',
+               'Gamer! O melhor é que ele vem com um microfone\ntambém pra você poder conversar com outros jogadores.',
                'Um bom monitor é importante pra conseguir aproveitar\no melhor do seu computador. Afinal, assim fica\n'
                'mais fácil trabalhar, estudar, jogar e etc. Mas\nter um Monitor Gamer é outro nível, por favor né.',
                'É um Playstation 5 amigo, não tem nem o que discutir\nesse console é o mais novo da geração com uma\n'
@@ -137,11 +137,11 @@ textos_loja = ['Mouse Gamer excepcional para sues games de FPS,\nquem gosta de j
                'Especial para quem gosta de jogar no computador ou\nno videogame, pois você não quer virar o corcunda\n'
                'de Notre Dame. A Cadeira Gamer é ergonômica e super\n confotável, para acabar com a sua dor na coluna.',
                'Um verdadeiro gamer também precisa jogar no tempo\nlivre, por isso ter um Celular Gamer é a melhor\n'
-               'opção para você. Quando quiser jogar Free Fire ou\nClas of Clans é preciso ter desempeho e boa tela.',
+               'opção para você. Quando quiser jogar Free Fire ou\nClash of Clans é preciso ter desempeho e boa tela.',
                'O Controle Gamer é ideal pra usar no console ou PC.\nPois ele vem com botões, joysticks, gatilhos que\n'
-               'acompanham o ritmo dos movimentos dos personagens,\n pra que sejam do jeitinho que você precisa e quer',
-               'Se você gosta de facilidade, de jogos bons de uma\ncomunidade divertida e de custo benefício, comprar\n'
-               'o Xbox Series X é a escolha certa para você. O\n Gamer que está dentro de você precisa desse console']
+               'acompanham o ritmo dos movimentos dos personagens,\npra que sejam do jeitinho que você precisa e quer.',
+               'Se você gosta de facilidade, de jogos bons, de uma\ncomunidade divertida e custo benefício, comprar\n'
+               'o Xbox Series X é a escolha certa para você. O\n Gamer que está dentro de você precisa desse console.']
 descricao_labels = [Label(compra, text=t, bg=cor_fundo, font='Montserrat 11 bold', width=46, height=4)
                     for t in textos_loja]
 compra_box = Label(compra, text='Produto', bg=cor_azul, font='Montserrat 16 bold', anchor=N, width=33, height=1,
@@ -155,7 +155,7 @@ quantidade_entry = Spinbox(compra, bg='white', font='Montserrat 16 bold', width=
                            to=20)
 compra_botao = Button(compra, text='Adicionar ao Carrinho', bg=cor_laranja, font='Montserrat 12 bold', bd=4,
                       relief='solid')
-
+especificacoes = Button(compra, text='Especificações', bg=cor_azul, font='Montserrat 14 bold', bd=4, relief='solid')
 # Funções do Programa
 
 
@@ -193,7 +193,7 @@ def mover_tudo():
     valor_dados.place(x=1000, y=1000)
     valor_label.place(x=1000, y=1000)
     valor_entry.place(x=1000, y=1000)
-    valor_entry.delete(0, END)
+    valor_entry.delete(0, 1)
     valor_botao.place(x=1000, y=1000)
     resposta_valor.place(x=1000, y=1000)
     casa_botao.place(x=1000, y=1000)
@@ -204,8 +204,10 @@ def mover_tudo():
     descricao_box.place(x=1000, y=1000)
     nome_preco.place(x=1000, y=1000)
     quantidade_entry.place(x=1000, y=1000)
+    quantidade_entry.delete(0, END)
     quantidade_label.place(x=1000, y=1000)
     compra_botao.place(x=1000, y=1000)
+    especificacoes.place(x=1000, y=1000)
     for w in descricao_labels:
         w.place(x=1000, y=1000)
     for x in botao:
@@ -253,14 +255,36 @@ def enviar_valor():  # Envia valor da Carteira
     try:
         float(valor_entry.get())
         socket_cliente.enviar(valor_entry.get())
-    except:
+    except ValueError:
         socket_cliente.enviar('-1')
-    valor_entry.delete(0, END)
+    valor_entry.delete(0, 1)
     resposta = socket_cliente.receber_decodificado()
     resposta_valor['text'] = resposta
     resposta_valor.place(x=435, y=245)
     atualizar_usuario()
     atualizar_valores()
+
+
+def enviar_produto(id_p):
+    socket_cliente.enviar('4')
+    socket_cliente.enviar(str(id_p))
+    try:
+        int(quantidade_entry.get())
+        if int(quantidade_entry.get()) > 0 and int(quantidade_entry.get()) <= 20:
+            socket_cliente.enviar(quantidade_entry.get())
+            atualizar_usuario()
+            atualizar_valores()
+        else:
+            socket_cliente.enviar('-1')
+    except ValueError:
+        socket_cliente.enviar('-1')
+    quantidade_entry.delete(0, END)
+    resposta = socket_cliente.receber_decodificado()
+    tela_loja()
+    if resposta == 'Item Adicionado ao Carrinho com Sucesso!':
+        messagebox.showinfo(title='Adicionar no Carrinho', message=resposta)
+    else:
+        messagebox.showerror(title='Adicionar no Carrinho', message=resposta)
 
 
 def atualizar_usuario():  # atualizar o Usuario
@@ -279,9 +303,8 @@ def deslogar():
 
 def atualizar_valores():
     valor_dados['text'] = 'Valor Total na Carteira: %.2f R$' % usuario.get_carteira().get_total()
-    valor_dados.place(x=435, y=140)
     carteira_label['text'] = '%.2f R$' % usuario.get_carteira().get_total()
-    carteira_label.place(x=530, y=47)
+    carteira_label['text'] = '%.2f R$' % usuario.get_carteira().get_total()
 
 
 def tela_inicial():  # Tela Inicial
@@ -411,13 +434,11 @@ def tela_comprar(id_p):  # Tela dos Produtos para Compra
     imagens_produtos[id_p].place(x=26, y=100)
     # Comprar
     compra_box.place(x=360, y=100)
-    print(compra_box.winfo_width())
-    print(descricao_box.winfo_width())
-    print(compra_botao.winfo_width())
     nome_preco['text'] = '%s          Preço: %.2f R$' % (produtos[id_p].get_nome(), produtos[id_p].get_preco())
     nome_preco.place(x=360, y=132)
     quantidade_label.place(x=360, y=160)
     quantidade_entry.place(x=729, y=160)
+    compra_botao['command'] = lambda: enviar_produto(id_p)
     compra_botao.place(x=486, y=192)
     # Descrição
     descricao_box.place(x=360, y=230)
