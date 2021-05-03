@@ -24,7 +24,7 @@ while True:
     # Estabelece uma Conexão
     socket_cliente, endereco = socket_servidor.aceitar_cliente()
     print("Conexão Estabelecida com: %s" % str(endereco))
-    textos_produtos = pickle.dumps([p.get_nome() for p in produtos])
+    textos_produtos = pickle.dumps(produtos)
     socket_cliente.enviar_bytes(textos_produtos)
 
     # Parte do Usuário
@@ -85,7 +85,19 @@ while True:
             socket_cliente.enviar(resposta)
             usuario_byte = pickle.dumps(usuario)
             socket_cliente.enviar_bytes(usuario_byte)
+        if menu == 9:
+            with open('usuarios.pickle', 'rb') as arquivo_usuarios:
+                usuarios_final = pickle.load(arquivo_usuarios)
 
+            for u in usuarios_final:
+                if usuario.get_email() == u.get_email():
+                    usuarios_final[usuarios_final.index(u)] = usuario
+
+            with open('usuarios.pickle', 'wb') as arquivo_usuarios:
+                pickle.dump(usuarios_final, arquivo_usuarios)
+
+            resposta = "Obrigado por Comprar na nossa Loja\n Compre Conosco Sempre que Puder!"
+            socket_cliente.enviar(resposta)
 
     # Finaliza a Conexão
     socket_cliente.fechar()

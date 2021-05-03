@@ -1,7 +1,8 @@
 class Produto:
-    def __init__(self, nome, preco):
+    def __init__(self, nome, preco, descricao=''):
         self.nome = nome
         self.preco = preco
+        self.descricao = descricao
 
     def get_nome(self):
         return self.nome
@@ -17,3 +18,6 @@ class Produto:
             self.preco = preco
         else:
             self.preco = 0
+
+    def get_descricao(self):
+        return self.descricao
