@@ -87,11 +87,12 @@ carteira_label = Label(loja, bg=cor_azul, font='Montserrat 16 bold', width=12, b
 carrinho_butao = Button(loja, image=imagem[13], bg='white', bd=4, relief='solid', command=lambda: tela_carrinho())
 carrinho_label = Label(loja, bg=cor_fundo, font='Montserrat 14 bold', width=10, anchor=W)
 carinho_finalizar = Label(loja, text='Carrinho', bg=cor_fundo, font='Montserrat 14 bold', width=10, anchor=W)
-# Recebendo todos os Nomes Pelo Servidor
-produtos_recebidos = socket_cliente.receber_bytes()
-produtos = pickle.loads(produtos_recebidos)
+# Recebendo todos os Produtos por File
+with open('produtos.pickle', 'rb') as arquivo_produtos:
+    produtos_bytes = pickle.load(arquivo_produtos)
+    produtos = [p for p in produtos_bytes]
 produto = [Label(loja, text=t.get_nome(), bg=cor_fundo, font='Montserrat 12 bold') for t in produtos]
-
+textos_loja = [str(p.descricao) for p in produtos]
 # Terceira Tela
 # Labels
 dados = Label(user, text='Dados', bg=cor_laranja, font='Montserrat 16 bold', anchor=N, width=25, height=13, bd=4,
@@ -124,26 +125,7 @@ valor_entry = Entry(user, bg='white', font='Montserrat 12', bd=2, relief='solid'
 # Quarta Tela
 imagens_produtos = [Label(compra, image=imagem[x], bg='white', width=300, height=300, bd=4, relief='solid') for x in
                     range(16, 26)]
-textos_loja = ['Mouse Gamer excepcional para seus games de FPS,\nquem gosta de jogar no PC, precisa de um mouse gamer\n'
-               'rápido e que corresponde ao jogador. Ele é \ndiferente do mouse comum e faz toda diferença na hora H.',
-               'Ter um Teclado Gamer vai deixar seus jogos\nmuito mais divertidos, quem não precisa de luzinhas RGB\n'
-               'para se exibir pros amigos não é mesmo. E o \nbarulho das teclas mecânicas com certeza é mais gostoso.',
-               'Para deixar a qualidade de som do seu jogo ainda\nmais real e potente. Vale a pena adquirir o Headset\n'
-               'Gamer! O melhor é que ele vem com um microfone\ntambém pra você poder conversar com outros jogadores.',
-               'Um bom monitor é importante pra conseguir aproveitar\no melhor do seu computador. Afinal, assim fica\n'
-               'mais fácil trabalhar, estudar, jogar e etc. Mas\nter um Monitor Gamer é outro nível, por favor né.',
-               'É um Playstation 5 amigo, não tem nem o que discutir\nesse console é o mais novo da geração com uma\n'
-               'potência gigante e diversos jogos incríveis nele.\nCompra Obrigatória para os verdadeiros gamers.',
-               'Pra quem quer comodidade e desempenho nós trazemos\no sensacional Notebook Gamer! Afinal, quem ai não\n'
-               'quer viajar e continuar jogando seu Valorant com os\namigos né. Peça já o seu e experimente essa.',
-               'Especial para quem gosta de jogar no computador ou\nno videogame, pois você não quer virar o corcunda\n'
-               'de Notre Dame. A Cadeira Gamer é ergonômica e super\n confotável, para acabar com a sua dor na coluna.',
-               'Um verdadeiro gamer também precisa jogar no tempo\nlivre, por isso ter um Celular Gamer é a melhor\n'
-               'opção para você. Quando quiser jogar Free Fire ou\nClash of Clans é preciso ter desempeho e boa tela.',
-               'O Controle Gamer é ideal pra usar no console ou PC.\nPois ele vem com botões, joysticks, gatilhos que\n'
-               'acompanham o ritmo dos movimentos dos personagens,\npra que sejam do jeitinho que você precisa e quer.',
-               'Se você gosta de facilidade, de jogos bons, de uma\ncomunidade divertida e custo benefício, comprar\n'
-               'o Xbox Series X é a escolha certa para você. O\n Gamer que está dentro de você precisa desse console.']
+
 descricao_labels = [Label(compra, text=t, bg=cor_fundo, font='Montserrat 11 bold', width=46, height=4)
                     for t in textos_loja]
 compra_box = Label(compra, text='Produto', bg=cor_azul, font='Montserrat 16 bold', anchor=N, width=33, height=1,
@@ -184,7 +166,7 @@ botao_remover = Button(compra, text='Remover', bg=cor_azul, font='Montserrat 12 
                        command=lambda: remover())
 id_label = Label(user, text='Id do Item: ', bg=cor_azul, font='Montserrat 12 bold', bd=2, relief='solid')
 id_entry = Entry(user, bg='white', font='Montserrat 12', bd=2, relief='solid', width=4)
-id_resposta = Label(user, font='Verdana 12 italic', bg='white', width=10, height=2)
+id_resposta = Label(user, font='Verdana 12 italic', bg=cor_laranja, width=10, height=2)
 
 
 # Funções do Programa
@@ -255,7 +237,6 @@ def mover_tudo():
     id_resposta.place(x=1000, y=1000)
     resposta_label['text'] = ''
     resposta_valor['text'] = ''
-    id_resposta['text'] = ''
     for w in descricao_labels:
         w.place(x=1000, y=1000)
     for x in botao:
@@ -367,7 +348,7 @@ def remover():
     socket_cliente.enviar('6')
     try:
         int(id_entry.get())
-        if int(id_entry.get()) > 0:
+        if int(id_entry.get()) > 0 and int(id_entry.get()) <= usuario.get_compra().tamanho_lista():
             socket_cliente.enviar(id_entry.get())
             atualizar_usuario()
             atualizar_valores()
@@ -467,7 +448,7 @@ def tela_loja():  # Tela Inicial dos Produtos
     produto[7].place(x=349, y=415)
     produto[8].place(x=497, y=415)
     produto[9].place(x=658, y=415)
-    # TODO messagebox.showinfo(title='Login Bem Sucedido', message=f'Bem Vindo {usuario.get_nome()}!')
+    messagebox.showinfo(title='Login Bem Sucedido', message=f'Bem Vindo {usuario.get_nome()}!')
 
 
 def tela_usuario():  # Tela Do Usuario
@@ -551,7 +532,9 @@ def tela_carrinho():  # Tela de Finalizar compra
     remover_item.place(x=586, y=90)
     id_label.place(x=620, y=150)
     id_entry.place(x=709, y=150)
-    botao_remover.place(x=640, y=180)
+    id_entry.delete(0, END)
+    botao_remover.place(x=642, y=180)
+    id_resposta.place(x=630, y=220)
     # Parte de Sair
     casa_botao.place(x=700, y=350)
     casa_label.place(x=590, y=360)

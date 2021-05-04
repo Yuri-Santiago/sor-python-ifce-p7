@@ -10,24 +10,27 @@ socket_servidor = EchoSocket()
 # Socket começa a escutar solicitações
 socket_servidor.escutar_atomico()
 
+
 # Salvando os Produtos da Loja e os Usuários
 with open('produtos.pickle', 'rb') as arquivo_produtos:
-    linhas = arquivo_produtos.readlines()
+    produtos = pickle.load(arquivo_produtos)
+
 
 with open('usuarios.pickle', 'rb') as arquivo_usuarios:
     usuarios = pickle.load(arquivo_usuarios)
 usuario = usuarios[0]
 
+
 def salvar_usuario():
-    with open('usuarios.pickle', 'rb') as arquivo_usuarios:
-                usuarios_final = pickle.load(arquivo_usuarios)
+    with open('usuarios.pickle', 'rb') as arquivo_final:
+        usuarios_final = pickle.load(arquivo_final)
 
-    for u in usuarios_final:
-        if usuario.get_email() == u.get_email():
-            usuarios_final[usuarios_final.index(u)] = usuario
+    for usuario in usuarios_final:
+        if usuario.get_email() == usuario.get_email():
+            usuarios_final[usuarios_final.index(usuario)] = usuario
 
-    with open('usuarios.pickle', 'wb') as arquivo_usuarios:
-        pickle.dump(usuarios_final, arquivo_usuarios)
+    with open('usuarios.pickle', 'wb') as arquivo_final:
+        pickle.dump(usuarios_final, arquivo_final)
 
 
 def enviar_usuario():
@@ -40,8 +43,6 @@ while True:
     # Estabelece uma Conexão
     socket_cliente, endereco = socket_servidor.aceitar_cliente()
     print("Conexão Estabelecida com: %s" % str(endereco))
-    textos_produtos = pickle.dumps(produtos)
-    socket_cliente.enviar_bytes(textos_produtos)
 
     # Parte do Usuário
     while True:
@@ -128,9 +129,9 @@ while True:
                 resposta = 'Id Inválido!'
                 socket_cliente.enviar(resposta)
             else:
-                usuario.get_compra().remover_item(id_lista-1)
+                usuario.get_compra().remover_item(id_lista - 1)
                 enviar_usuario()
-                resposta = 'Id Inválido!'
+                resposta = 'Item Removido.'
                 socket_cliente.enviar(resposta)
         # Sair
         if menu == 9:

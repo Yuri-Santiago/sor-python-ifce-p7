@@ -35,5 +35,6 @@ class EchoSocket:
 
     def enviar_bytes(self, pacote):
         self.socket.send(pacote)
+
     def fechar(self):
         self.socket.close()
