@@ -11,9 +11,8 @@ socket_servidor = EchoSocket()
 socket_servidor.escutar_atomico()
 
 # Salvando os Produtos da Loja e os Usuários
-with open('produtos.txt', 'r') as arquivo_produtos:
+with open('produtos.pickle', 'rb') as arquivo_produtos:
     linhas = arquivo_produtos.readlines()
-produtos = [Produto(p.split('-')[0], float(p.split('-')[1])) for p in linhas]
 
 with open('usuarios.pickle', 'rb') as arquivo_usuarios:
     usuarios = pickle.load(arquivo_usuarios)
@@ -29,6 +28,12 @@ def salvar_usuario():
 
     with open('usuarios.pickle', 'wb') as arquivo_usuarios:
         pickle.dump(usuarios_final, arquivo_usuarios)
+
+
+def enviar_usuario():
+    usuario_byte = pickle.dumps(usuario)
+    socket_cliente.enviar_bytes(usuario_byte)
+
 
 # Começo das conexão
 while True:
@@ -57,8 +62,7 @@ while True:
                             resposta = 'Bem vindo'
                             socket_cliente.enviar(resposta)
                             usuario = u
-                            usuario_byte = pickle.dumps(usuario)
-                            socket_cliente.enviar_bytes(usuario_byte)
+                            enviar_usuario()
                             break
                         else:  # Senha Errada
                             resposta = 'Senha Incorreta.\nTente Novamente.'
@@ -87,15 +91,13 @@ while True:
                     usuarios.append(usuario)
                     with open('usuarios.pickle', 'wb') as arquivo_usuarios:
                         pickle.dump(usuarios, arquivo_usuarios)
-                    usuario_byte = pickle.dumps(usuario)
-                    socket_cliente.enviar_bytes(usuario_byte)
+                    enviar_usuario()
         # Adicionar Valor na Careira
         if menu == 3:
             valor = socket_cliente.receber_float()
             resposta = usuario.get_carteira().adicionar(valor)
             socket_cliente.enviar(resposta)
-            usuario_byte = pickle.dumps(usuario)
-            socket_cliente.enviar_bytes(usuario_byte)
+            enviar_usuario()
         # Adicionar Item no Carrinho
         if menu == 4:
             id_produto = socket_cliente.receber_inteiro()
@@ -103,12 +105,32 @@ while True:
             if quantidade > 0:
                 item = Item(produtos[id_produto], quantidade)
                 usuario.get_compra().add_item(item)
-                usuario_byte = pickle.dumps(usuario)
-                socket_cliente.enviar_bytes(usuario_byte)
+                enviar_usuario()
                 resposta = 'Item Adicionado ao Carrinho com Sucesso!'
                 socket_cliente.enviar(resposta)
             else:
                 resposta = 'Quantidade Inválida!'
+                socket_cliente.enviar(resposta)
+        # Finalizar Compra
+        if menu == 5:
+            if usuario.get_compra().get_valor_compra() > 0:
+                resposta = usuario.get_carteira().pagar(usuario.get_compra().get_valor_compra())
+                socket_cliente.enviar(resposta)
+                if resposta == 'Pagamento Aprovado.\nCompra Bem Sucedida!':
+                    usuario.fechar_compra()
+                    enviar_usuario()
+            else:
+                resposta = 'Compra Vazia!'
+                socket_cliente.enviar(resposta)
+        if menu == 6:
+            id_lista = socket_cliente.receber_inteiro()
+            if id_lista == -1 or id_lista > usuario.get_compra().tamanho_lista():
+                resposta = 'Id Inválido!'
+                socket_cliente.enviar(resposta)
+            else:
+                usuario.get_compra().remover_item(id_lista-1)
+                enviar_usuario()
+                resposta = 'Id Inválido!'
                 socket_cliente.enviar(resposta)
         # Sair
         if menu == 9:

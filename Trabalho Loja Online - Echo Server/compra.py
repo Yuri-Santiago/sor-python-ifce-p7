@@ -40,3 +40,12 @@ class Compra:
                     resultado += '%.2f R$\n' % item.get_valor_item()
                 contador += 1
         return resultado
+
+    def remover_item(self, id_item):
+        self.itens.pop(id_item)
+
+    def set_item(self, lista):
+        self.itens = lista
+
+    def tamanho_lista(self):
+        return len(self.itens)

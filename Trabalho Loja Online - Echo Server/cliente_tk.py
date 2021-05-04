@@ -27,6 +27,7 @@ inicio = Frame(tela).pack()
 loja = Frame(tela).pack()
 user = Frame(tela).pack()
 compra = Frame(tela).pack()
+
 carrinho = Frame(tela).pack()
 # Criando Objetos
 # Carregando as Imagens para a Lista
@@ -57,7 +58,7 @@ nome_label = Label(inicio, text='Nome: ', bg=cor_azul, font='Montserrat 15', bd=
 
 # Entrys
 email_entry = Entry(inicio, bg='white', font='Montserrat 15', bd=2, relief='solid')
-senha_entry = Entry(inicio, bg='white', font='Montserrat 15', bd=2, relief='solid')
+senha_entry = Entry(inicio, bg='white', font='Montserrat 15', bd=2, relief='solid', show='*')
 nome_entry = Entry(inicio, bg='white', font='Montserrat 15', bd=2, relief='solid')
 # Buttons
 entrar = Button(inicio, text='Entrar', bg=cor_azul, font='Montserrat 15 bold', width=24, padx=5,
@@ -161,18 +162,30 @@ especificacoes = Button(compra, text='Especificações', bg=cor_azul, font='Mont
 # Quinta Tela
 itens_carrinho = Label(carrinho, text='Itens do Carrinho', bg=cor_laranja, font='Montserrat 16 bold', anchor=N,
                        width=39, padx=3, height=14, bd=4, relief='solid')
-itens_label = Label(carrinho, text='%5s%22s%25s%20s%20s' % ('Id', 'Produto', 'Preço', 'Quantidade', 'Preço Total'),
+itens_label = Label(carrinho, text='%5s%22s%30s%16s%16s' % ('Id', 'Produto', 'Preço', 'Quant.', 'Preço Total'),
                     bg='white', font='Montserrat 12', width=55, anchor=W, bd=2, relief='solid')
 itens_id = Label(carrinho, bg='white', font='Montserrat 12', anchor=NE, justify=RIGHT, width=4, height=12, bd=2,
                  relief='solid')
-itens_nomes = Label(carrinho, bg='white', font='Montserrat 12', anchor=NE, justify=RIGHT, width=16, height=12, bd=2,
+itens_nomes = Label(carrinho, bg='white', font='Montserrat 12', anchor=NE, justify=RIGHT, width=17, height=12, bd=2,
                     relief='solid')
-itens_preco = Label(carrinho, bg='white', font='Montserrat 12', anchor=NE, justify=RIGHT, width=12, height=12, bd=2,
+itens_preco = Label(carrinho, bg='white', font='Montserrat 12', anchor=NE, justify=RIGHT, width=14, height=12, bd=2,
+                    relief='solid', padx=4)
+itens_quantidade = Label(carrinho, bg='white', font='Montserrat 12', anchor=NE, justify=RIGHT, width=3, height=12, bd=2,
+                         relief='solid')
+itens_total = Label(carrinho, bg='white', font='Montserrat 12', anchor=NE, justify=RIGHT, width=15, height=12, bd=2,
                     relief='solid')
-itens_quantidade = Label(carrinho, bg='white', font='Montserrat 12', anchor=NE, justify=RIGHT, width=5, height=12, bd=2,
-                         relief='solid')
-itens_total = Label(carrinho, bg='white', font='Montserrat 12', anchor=NE, justify=RIGHT, width=14, height=12, bd=2,
-                         relief='solid')
+total_label = Label(carrinho, bg='white', font='Montserrat 12', width=55, anchor=E, bd=2, relief='solid')
+
+botao_comprar = Button(compra, text='Finalizar Compra', bg=cor_azul, font='Montserrat 14 bold', bd=4, relief='solid',
+                       command=lambda: finalizar_compra())
+remover_item = Label(carrinho, text='Remover Item\ndo Carrinho', bg=cor_laranja, font='Montserrat 16 bold', anchor=N,
+                     width=14, padx=3, height=8, bd=4, relief='solid')
+botao_remover = Button(compra, text='Remover', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid',
+                       command=lambda: remover())
+id_label = Label(user, text='Id do Item: ', bg=cor_azul, font='Montserrat 12 bold', bd=2, relief='solid')
+id_entry = Entry(user, bg='white', font='Montserrat 12', bd=2, relief='solid', width=4)
+id_resposta = Label(user, font='Verdana 12 italic', bg='white', width=10, height=2)
+
 
 # Funções do Programa
 
@@ -233,6 +246,16 @@ def mover_tudo():
     itens_preco.place(x=1000, y=1000)
     itens_quantidade.place(x=1000, y=1000)
     itens_total.place(x=1000, y=1000)
+    total_label.place(x=1000, y=1000)
+    botao_comprar.place(x=1000, y=1000)
+    remover_item.place(x=1000, y=1000)
+    botao_remover.place(x=1000, y=1000)
+    id_entry.place(x=1000, y=1000)
+    id_label.place(x=1000, y=1000)
+    id_resposta.place(x=1000, y=1000)
+    resposta_label['text'] = ''
+    resposta_valor['text'] = ''
+    id_resposta['text'] = ''
     for w in descricao_labels:
         w.place(x=1000, y=1000)
     for x in botao:
@@ -256,7 +279,6 @@ def enviar_login():  # Função de Enviar o Login
     enviar_dado(senha_entry)
     resposta = socket_cliente.receber_decodificado()
     resposta_label['text'] = resposta
-    resposta_label.place(x=45, y=275)
     if resposta == 'Bem vindo':
         atualizar_usuario()
         tela_loja()
@@ -269,7 +291,6 @@ def enviar_cadastro():  # Enviar conta para criação do usuario
     enviar_dado(senha_entry)
     resposta = socket_cliente.receber_decodificado()
     resposta_label['text'] = resposta
-    resposta_label.place(x=450, y=275)
     if resposta == 'Conta criada':
         atualizar_usuario()
         tela_loja()
@@ -280,12 +301,12 @@ def enviar_valor():  # Envia valor da Carteira
     try:
         float(valor_entry.get())
         socket_cliente.enviar(valor_entry.get())
-    except ValueError:
+    except ValueError as erro:
         socket_cliente.enviar('-1')
+    valor_entry.delete(0, 1)
     valor_entry.delete(0, END)
     resposta = socket_cliente.receber_decodificado()
     resposta_valor['text'] = resposta
-    resposta_valor.place(x=435, y=245)
     atualizar_usuario()
     atualizar_valores()
 
@@ -332,6 +353,34 @@ def atualizar_valores():
     carteira_label['text'] = '%.2f R$' % usuario.get_carteira().get_total()
 
 
+def finalizar_compra():
+    socket_cliente.enviar('5')
+    resposta = socket_cliente.receber_decodificado()
+    if resposta == 'Pagamento Aprovado.\nCompra Bem Sucedida!':
+        atualizar_usuario()
+        atualizar_valores()
+    tela_loja()
+    messagebox.showinfo(title='Compra', message=resposta)
+
+
+def remover():
+    socket_cliente.enviar('6')
+    try:
+        int(id_entry.get())
+        if int(id_entry.get()) > 0:
+            socket_cliente.enviar(id_entry.get())
+            atualizar_usuario()
+            atualizar_valores()
+        else:
+            socket_cliente.enviar('-1')
+    except ValueError:
+        socket_cliente.enviar('-1')
+    id_entry.delete(0, END)
+    resposta = socket_cliente.receber_decodificado()
+    id_resposta['text'] = resposta
+    tela_carrinho()
+
+
 def tela_inicial():  # Tela Inicial
     # Movendo coisas pra longe
     mover_tudo()
@@ -350,6 +399,7 @@ def tela_inicial():  # Tela Inicial
     cadastrar['text'] = 'Cadastrar'
     cadastrar['command'] = lambda: tela_cadastro()
     cadastrar.place(x=155, y=330)
+    resposta_label.place(x=45, y=275)
 
 
 def tela_cadastro():  # Função da Tela de Cadastro
@@ -373,6 +423,7 @@ def tela_cadastro():  # Função da Tela de Cadastro
     cadastrar['text'] = 'Voltar'
     cadastrar.place(x=580, y=330)
     cadastrar['command'] = lambda: tela_inicial()
+    resposta_label.place(x=450, y=275)
 
 
 def menu_cima():  # Tela de Cima
@@ -443,6 +494,7 @@ def tela_usuario():  # Tela Do Usuario
     valor_entry.place(x=585, y=170)
     valor_botao['command'] = lambda: enviar_valor()
     valor_botao.place(x=530, y=200)
+    resposta_valor.place(x=435, y=245)
     # Voltar
     casa_botao.place(x=700, y=350)
     casa_label.place(x=590, y=360)
@@ -469,7 +521,7 @@ def tela_comprar(id_p):  # Tela dos Produtos para Compra
     # Descrição
     descricao_box.place(x=360, y=230)
     descricao_labels[id_p].place(x=375, y=265)
-
+    especificacoes.place(x=360, y=350)
     # Parte de Sair
     casa_botao.place(x=700, y=350)
     casa_label.place(x=590, y=360)
@@ -487,14 +539,23 @@ def tela_carrinho():  # Tela de Finalizar compra
     itens_nomes['text'] = usuario.get_compra().listar_itens_separados('nome')
     itens_nomes.place(x=70, y=142)
     itens_preco['text'] = usuario.get_compra().listar_itens_separados('preco')
-    itens_preco.place(x=219, y=142)
+    itens_preco.place(x=227, y=142)
     itens_quantidade['text'] = usuario.get_compra().listar_itens_separados('quantidade')
-    itens_quantidade.place(x=350, y=142)
+    itens_quantidade.place(x=360, y=142)
     itens_total['text'] = usuario.get_compra().listar_itens_separados('total')
-    itens_total.place(x=399, y=142)
+    itens_total.place(x=390, y=142)
+    total_label['text'] = 'Valor Total da Compra: %8.2f R$' % usuario.get_compra().get_valor_compra()
+    total_label.place(x=30, y=360)
+    botao_comprar.place(x=351, y=387)
+    # Remover Item
+    remover_item.place(x=586, y=90)
+    id_label.place(x=620, y=150)
+    id_entry.place(x=709, y=150)
+    botao_remover.place(x=640, y=180)
     # Parte de Sair
     casa_botao.place(x=700, y=350)
     casa_label.place(x=590, y=360)
+
 
 def fechar():
     if messagebox.askokcancel("Sair", "Você deseja Sair?"):
@@ -502,8 +563,8 @@ def fechar():
         tela.destroy()
         socket_cliente.fechar()
 
+
 # Começo do Programa
 tela_inicial()
 tela.protocol("WM_DELETE_WINDOW", lambda: fechar())
 tela.mainloop()
-
