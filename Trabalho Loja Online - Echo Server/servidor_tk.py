@@ -19,6 +19,17 @@ with open('usuarios.pickle', 'rb') as arquivo_usuarios:
     usuarios = pickle.load(arquivo_usuarios)
 usuario = usuarios[0]
 
+def salvar_usuario():
+    with open('usuarios.pickle', 'rb') as arquivo_usuarios:
+                usuarios_final = pickle.load(arquivo_usuarios)
+
+    for u in usuarios_final:
+        if usuario.get_email() == u.get_email():
+            usuarios_final[usuarios_final.index(u)] = usuario
+
+    with open('usuarios.pickle', 'wb') as arquivo_usuarios:
+        pickle.dump(usuarios_final, arquivo_usuarios)
+
 # Começo das conexão
 while True:
     # Estabelece uma Conexão
@@ -101,19 +112,12 @@ while True:
                 socket_cliente.enviar(resposta)
         # Sair
         if menu == 9:
-            with open('usuarios.pickle', 'rb') as arquivo_usuarios:
-                usuarios_final = pickle.load(arquivo_usuarios)
-
-            for u in usuarios_final:
-                if usuario.get_email() == u.get_email():
-                    usuarios_final[usuarios_final.index(u)] = usuario
-
-            with open('usuarios.pickle', 'wb') as arquivo_usuarios:
-                pickle.dump(usuarios_final, arquivo_usuarios)
-
+            salvar_usuario()
             resposta = "Obrigado por Comprar na nossa Loja\n Compre Conosco Sempre que Puder!"
             socket_cliente.enviar(resposta)
 
+        if menu == 0:
+            salvar_usuario()
+            break
     # Finaliza a Conexão
     socket_cliente.fechar()
-    socket_servidor.fechar()

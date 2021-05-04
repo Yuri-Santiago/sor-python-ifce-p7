@@ -14,14 +14,29 @@ class Compra:
 
         if len(self.itens) > 0:
             for item in self.itens:
-                if item.get_quantidade() > 1:
-                    resultado += '%d: O produto %s tem o valor de %.2f R$ e a quantidade é de %d produtos.\n' % \
-                             (contador, item.get_produto_nome(), item.get_produto_preco(), item.get_quantidade())
-                else:
-                    resultado += '%d: O produto %s tem o valor de %.2f R$.\n' % \
-                             (contador, item.get_produto_nome(), item.get_produto_preco())
+                resultado += '%4d:%30s|%16.2f R$|%8d|%24.2f R$\n' % (contador, item.get_produto_nome(),
+                                                                     item.get_produto_preco(), item.get_quantidade(),
+                                                                     item.get_valor_item())
                 contador += 1
         else:
             resultado += 'Sem items na Compra\n'
 
+        return resultado
+
+    def listar_itens_separados(self, dado):
+        resultado = ""
+        contador = 1
+        if len(self.itens) > 0:
+            for item in self.itens:
+                if dado == 'id':
+                    resultado += '%d\n' % contador
+                elif dado == 'nome':
+                    resultado += '%s\n' % item.get_produto_nome()
+                elif dado == 'preco':
+                    resultado += '%.2f R$\n' % item.get_produto_preco()
+                elif dado == 'quantidade':
+                    resultado += '%d\n' % item.get_quantidade()
+                elif dado == 'total':
+                    resultado += '%.2f R$\n' % item.get_valor_item()
+                contador += 1
         return resultado

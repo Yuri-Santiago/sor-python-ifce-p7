@@ -1,6 +1,7 @@
 from echo_socket import EchoSocket
 from usuario import Usuario
 from tkinter import *
+from tkinter import messagebox
 from PIL import ImageTk, Image
 import pickle
 
@@ -26,7 +27,7 @@ inicio = Frame(tela).pack()
 loja = Frame(tela).pack()
 user = Frame(tela).pack()
 compra = Frame(tela).pack()
-
+carrinho = Frame(tela).pack()
 # Criando Objetos
 # Carregando as Imagens para a Lista
 imagens_textos = ['imagens/mouse.png', 'imagens/teclado.png', 'imagens/headset.png', 'imagens/monitor.png',
@@ -82,7 +83,7 @@ gamer_loja = Label(loja, text='Gamer Store', bg=cor_laranja, font='Impact 16 bol
 usuario_butao = Button(loja, image=imagem[12], bg='white', bd=4, relief='solid', )
 usuario_label = Label(loja, bg=cor_azul, font='Montserrat 16 bold', width=12, bd=2, relief='solid')
 carteira_label = Label(loja, bg=cor_azul, font='Montserrat 16 bold', width=12, bd=2, relief='solid')
-carrinho_butao = Button(loja, image=imagem[13], bg='white', bd=4, relief='solid')
+carrinho_butao = Button(loja, image=imagem[13], bg='white', bd=4, relief='solid', command=lambda: tela_carrinho())
 carrinho_label = Label(loja, bg=cor_fundo, font='Montserrat 14 bold', width=10, anchor=W)
 carinho_finalizar = Label(loja, text='Carrinho', bg=cor_fundo, font='Montserrat 14 bold', width=10, anchor=W)
 # Recebendo todos os Nomes Pelo Servidor
@@ -156,6 +157,23 @@ quantidade_entry = Spinbox(compra, bg='white', font='Montserrat 16 bold', width=
 compra_botao = Button(compra, text='Adicionar ao Carrinho', bg=cor_laranja, font='Montserrat 12 bold', bd=4,
                       relief='solid')
 especificacoes = Button(compra, text='Especificações', bg=cor_azul, font='Montserrat 14 bold', bd=4, relief='solid')
+
+# Quinta Tela
+itens_carrinho = Label(carrinho, text='Itens do Carrinho', bg=cor_laranja, font='Montserrat 16 bold', anchor=N,
+                       width=39, padx=3, height=14, bd=4, relief='solid')
+itens_label = Label(carrinho, text='%5s%22s%25s%20s%20s' % ('Id', 'Produto', 'Preço', 'Quantidade', 'Preço Total'),
+                    bg='white', font='Montserrat 12', width=55, anchor=W, bd=2, relief='solid')
+itens_id = Label(carrinho, bg='white', font='Montserrat 12', anchor=NE, justify=RIGHT, width=4, height=12, bd=2,
+                 relief='solid')
+itens_nomes = Label(carrinho, bg='white', font='Montserrat 12', anchor=NE, justify=RIGHT, width=16, height=12, bd=2,
+                    relief='solid')
+itens_preco = Label(carrinho, bg='white', font='Montserrat 12', anchor=NE, justify=RIGHT, width=12, height=12, bd=2,
+                    relief='solid')
+itens_quantidade = Label(carrinho, bg='white', font='Montserrat 12', anchor=NE, justify=RIGHT, width=5, height=12, bd=2,
+                         relief='solid')
+itens_total = Label(carrinho, bg='white', font='Montserrat 12', anchor=NE, justify=RIGHT, width=14, height=12, bd=2,
+                         relief='solid')
+
 # Funções do Programa
 
 
@@ -208,6 +226,13 @@ def mover_tudo():
     quantidade_label.place(x=1000, y=1000)
     compra_botao.place(x=1000, y=1000)
     especificacoes.place(x=1000, y=1000)
+    itens_carrinho.place(x=1000, y=1000)
+    itens_id.place(x=1000, y=1000)
+    itens_nomes.place(x=1000, y=1000)
+    itens_label.place(x=1000, y=1000)
+    itens_preco.place(x=1000, y=1000)
+    itens_quantidade.place(x=1000, y=1000)
+    itens_total.place(x=1000, y=1000)
     for w in descricao_labels:
         w.place(x=1000, y=1000)
     for x in botao:
@@ -257,7 +282,7 @@ def enviar_valor():  # Envia valor da Carteira
         socket_cliente.enviar(valor_entry.get())
     except ValueError:
         socket_cliente.enviar('-1')
-    valor_entry.delete(0, 1)
+    valor_entry.delete(0, END)
     resposta = socket_cliente.receber_decodificado()
     resposta_valor['text'] = resposta
     resposta_valor.place(x=435, y=245)
@@ -438,6 +463,7 @@ def tela_comprar(id_p):  # Tela dos Produtos para Compra
     nome_preco.place(x=360, y=132)
     quantidade_label.place(x=360, y=160)
     quantidade_entry.place(x=729, y=160)
+    quantidade_entry.insert(0, 1)
     compra_botao['command'] = lambda: enviar_produto(id_p)
     compra_botao.place(x=486, y=192)
     # Descrição
@@ -449,11 +475,35 @@ def tela_comprar(id_p):  # Tela dos Produtos para Compra
     casa_label.place(x=590, y=360)
 
 
+def tela_carrinho():  # Tela de Finalizar compra
+    mover_tudo()
+    menu_cima()
+
+    # Tela
+    itens_carrinho.place(x=20, y=90)
+    itens_label.place(x=30, y=120)
+    itens_id['text'] = usuario.get_compra().listar_itens_separados('id')
+    itens_id.place(x=30, y=142)
+    itens_nomes['text'] = usuario.get_compra().listar_itens_separados('nome')
+    itens_nomes.place(x=70, y=142)
+    itens_preco['text'] = usuario.get_compra().listar_itens_separados('preco')
+    itens_preco.place(x=219, y=142)
+    itens_quantidade['text'] = usuario.get_compra().listar_itens_separados('quantidade')
+    itens_quantidade.place(x=350, y=142)
+    itens_total['text'] = usuario.get_compra().listar_itens_separados('total')
+    itens_total.place(x=399, y=142)
+    # Parte de Sair
+    casa_botao.place(x=700, y=350)
+    casa_label.place(x=590, y=360)
+
+def fechar():
+    if messagebox.askokcancel("Sair", "Você deseja Sair?"):
+        socket_cliente.enviar('0')
+        tela.destroy()
+        socket_cliente.fechar()
+
 # Começo do Programa
 tela_inicial()
+tela.protocol("WM_DELETE_WINDOW", lambda: fechar())
 tela.mainloop()
-"""def on_closing():
-    if messagebox.askokcancel("Quit", "Do you want to quit?"):
-        tela.destroy()
 
-tela.protocol("WM_DELETE_WINDOW", on_closing)"""
