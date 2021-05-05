@@ -24,11 +24,12 @@ class EchoSocket:
 
     def receber_float(self):
         return float(self.socket.recv(1024))
+
     def receber_decodificado(self):
         return self.socket.recv(1024).decode('utf-8')
 
     def receber_bytes(self):
-        return self.socket.recv(1024)
+        return self.socket.recv(4096)
 
     def enviar(self, pacote):
         self.socket.send(pacote.encode('utf-8'))

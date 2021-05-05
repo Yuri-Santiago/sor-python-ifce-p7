@@ -1,12 +1,9 @@
 from echo_socket import EchoSocket
-from usuario import Usuario
 from tkinter import *
 from tkinter import messagebox
 from PIL import ImageTk, Image
 import pickle
 
-# Criando o Usuario
-usuario = Usuario()
 # Criando o Socket do Cliente
 socket_cliente = EchoSocket()
 
@@ -87,10 +84,10 @@ carteira_label = Label(loja, bg=cor_azul, font='Montserrat 16 bold', width=12, b
 carrinho_butao = Button(loja, image=imagem[13], bg='white', bd=4, relief='solid', command=lambda: tela_carrinho())
 carrinho_label = Label(loja, bg=cor_fundo, font='Montserrat 14 bold', width=10, anchor=W)
 carinho_finalizar = Label(loja, text='Carrinho', bg=cor_fundo, font='Montserrat 14 bold', width=10, anchor=W)
-# Recebendo todos os Produtos por File
-with open('produtos.pickle', 'rb') as arquivo_produtos:
-    produtos_bytes = pickle.load(arquivo_produtos)
-    produtos = [p for p in produtos_bytes]
+# Recebendo todos os Produtos pelo Servidor
+produtos_byte = socket_cliente.receber_bytes()
+produtos = pickle.loads(produtos_byte)
+
 produto = [Label(loja, text=t.get_nome(), bg=cor_fundo, font='Montserrat 12 bold') for t in produtos]
 textos_loja = [str(p.descricao) for p in produtos]
 # Terceira Tela
@@ -161,12 +158,12 @@ total_label = Label(carrinho, bg='white', font='Montserrat 12', width=55, anchor
 botao_comprar = Button(compra, text='Finalizar Compra', bg=cor_azul, font='Montserrat 14 bold', bd=4, relief='solid',
                        command=lambda: finalizar_compra())
 remover_item = Label(carrinho, text='Remover Item\ndo Carrinho', bg=cor_laranja, font='Montserrat 16 bold', anchor=N,
-                     width=14, padx=3, height=8, bd=4, relief='solid')
+                     width=14, padx=3, height=7, bd=4, relief='solid')
 botao_remover = Button(compra, text='Remover', bg=cor_azul, font='Montserrat 12 bold', bd=4, relief='solid',
                        command=lambda: remover())
 id_label = Label(user, text='Id do Item: ', bg=cor_azul, font='Montserrat 12 bold', bd=2, relief='solid')
 id_entry = Entry(user, bg='white', font='Montserrat 12', bd=2, relief='solid', width=4)
-id_resposta = Label(user, font='Verdana 12 italic', bg=cor_laranja, width=10, height=2)
+id_resposta = Label(user, font='Verdana 12 italic', bg=cor_laranja, width=13,)
 
 
 # Funções do Programa
@@ -263,6 +260,7 @@ def enviar_login():  # Função de Enviar o Login
     if resposta == 'Bem vindo':
         atualizar_usuario()
         tela_loja()
+        messagebox.showinfo(title='Login Bem Sucedido', message=f'Bem Vindo {usuario.get_nome()}!')
 
 
 def enviar_cadastro():  # Enviar conta para criação do usuario
@@ -275,6 +273,7 @@ def enviar_cadastro():  # Enviar conta para criação do usuario
     if resposta == 'Conta criada':
         atualizar_usuario()
         tela_loja()
+        messagebox.showinfo(title='Login Bem Sucedido', message=f'Bem Vindo {usuario.get_nome()}!')
 
 
 def enviar_valor():  # Envia valor da Carteira
@@ -282,7 +281,7 @@ def enviar_valor():  # Envia valor da Carteira
     try:
         float(valor_entry.get())
         socket_cliente.enviar(valor_entry.get())
-    except ValueError as erro:
+    except ValueError:
         socket_cliente.enviar('-1')
     valor_entry.delete(0, 1)
     valor_entry.delete(0, END)
@@ -297,7 +296,7 @@ def enviar_produto(id_p):
     socket_cliente.enviar(str(id_p))
     try:
         int(quantidade_entry.get())
-        if int(quantidade_entry.get()) > 0 and int(quantidade_entry.get()) <= 20:
+        if 0 < int(quantidade_entry.get()) <= 20:
             socket_cliente.enviar(quantidade_entry.get())
             atualizar_usuario()
             atualizar_valores()
@@ -348,7 +347,7 @@ def remover():
     socket_cliente.enviar('6')
     try:
         int(id_entry.get())
-        if int(id_entry.get()) > 0 and int(id_entry.get()) <= usuario.get_compra().tamanho_lista():
+        if 0 < int(id_entry.get()) <= usuario.get_compra().tamanho_lista():
             socket_cliente.enviar(id_entry.get())
             atualizar_usuario()
             atualizar_valores()
@@ -448,7 +447,6 @@ def tela_loja():  # Tela Inicial dos Produtos
     produto[7].place(x=349, y=415)
     produto[8].place(x=497, y=415)
     produto[9].place(x=658, y=415)
-    messagebox.showinfo(title='Login Bem Sucedido', message=f'Bem Vindo {usuario.get_nome()}!')
 
 
 def tela_usuario():  # Tela Do Usuario
@@ -534,7 +532,7 @@ def tela_carrinho():  # Tela de Finalizar compra
     id_entry.place(x=709, y=150)
     id_entry.delete(0, END)
     botao_remover.place(x=642, y=180)
-    id_resposta.place(x=630, y=220)
+    id_resposta.place(x=619, y=230)
     # Parte de Sair
     casa_botao.place(x=700, y=350)
     casa_label.place(x=590, y=360)

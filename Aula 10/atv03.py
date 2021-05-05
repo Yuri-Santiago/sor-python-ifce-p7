@@ -1,5 +1,5 @@
 """
-3 - Classe Bomba de Combustível: Faça um programa completo utilizando classes e métodos que:
+3 - Classe Bomba de Combustível: Faça um programa completo utilizando classses e métodos que:
     1. Possua uma classe chamada bombaCombustível, com no mínimo esses atributos:
     2. tipoCombustivel.
     3. valorLitro
