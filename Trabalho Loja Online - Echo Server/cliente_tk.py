@@ -10,6 +10,10 @@ socket_cliente = EchoSocket()
 # Conectando o Cliente ao Servidor
 socket_cliente.conectar_cliente_local()
 
+# Recebendo todos os Produtos pelo Servidor
+produtos_byte = socket_cliente.receber_bytes()
+produtos = pickle.loads(produtos_byte)
+
 # Tkinter
 # Criando a Tela
 tela = Tk()
@@ -84,9 +88,6 @@ carteira_label = Label(loja, bg=cor_azul, font='Montserrat 16 bold', width=12, b
 carrinho_butao = Button(loja, image=imagem[13], bg='white', bd=4, relief='solid', command=lambda: tela_carrinho())
 carrinho_label = Label(loja, bg=cor_fundo, font='Montserrat 14 bold', width=10, anchor=W)
 carinho_finalizar = Label(loja, text='Carrinho', bg=cor_fundo, font='Montserrat 14 bold', width=10, anchor=W)
-# Recebendo todos os Produtos pelo Servidor
-produtos_byte = socket_cliente.receber_bytes()
-produtos = pickle.loads(produtos_byte)
 
 produto = [Label(loja, text=t.get_nome(), bg=cor_fundo, font='Montserrat 12 bold') for t in produtos]
 textos_loja = [str(p.descricao) for p in produtos]
@@ -291,7 +292,7 @@ def enviar_valor():  # Envia valor da Carteira
     atualizar_valores()
 
 
-def enviar_produto(id_p):
+def enviar_produto(id_p):  # Envia Produto para a Compra
     socket_cliente.enviar('4')
     socket_cliente.enviar(str(id_p))
     try:
@@ -319,7 +320,7 @@ def atualizar_usuario():  # atualizar o Usuario
     usuario = pickle.loads(usuario_byte)
 
 
-def deslogar():
+def deslogar():  # Deslogar o Usuário da Conta
     if messagebox.askokcancel(title='Sair?', message=f'{usuario.get_nome()} quer Sair da Conta?'):
         socket_cliente.enviar('9')
         resposta = socket_cliente.receber_decodificado()
@@ -327,13 +328,13 @@ def deslogar():
         messagebox.showinfo(title='Volte Sempre!', message=resposta)
 
 
-def atualizar_valores():
+def atualizar_valores():  # Atualiza Label dos valores
     valor_dados['text'] = 'Valor Total na Carteira: %.2f R$' % usuario.get_carteira().get_total()
     carteira_label['text'] = '%.2f R$' % usuario.get_carteira().get_total()
     carteira_label['text'] = '%.2f R$' % usuario.get_carteira().get_total()
 
 
-def finalizar_compra():
+def finalizar_compra():  # Finalizo a Compra do Usuário
     socket_cliente.enviar('5')
     resposta = socket_cliente.receber_decodificado()
     if resposta == 'Pagamento Aprovado.\nCompra Bem Sucedida!':
@@ -343,7 +344,7 @@ def finalizar_compra():
     messagebox.showinfo(title='Compra', message=resposta)
 
 
-def remover():
+def remover():  # Remove Item do Carrinho
     socket_cliente.enviar('6')
     try:
         int(id_entry.get())

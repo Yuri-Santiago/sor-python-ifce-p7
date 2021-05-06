@@ -10,7 +10,6 @@ socket_servidor = EchoSocket()
 # Socket começa a escutar solicitações
 socket_servidor.escutar_atomico()
 
-
 # Salvando os Produtos da Loja e os Usuários
 with open('produtos.pickle', 'rb') as arquivo_produtos:
     produtos_bytes = pickle.load(arquivo_produtos)
@@ -43,7 +42,7 @@ while True:
     # Estabelece uma Conexão
     socket_cliente, endereco = socket_servidor.aceitar_cliente()
     print("Conexão Estabelecida com: %s" % str(endereco))
-
+    # Envio Produtos para o Cliente
     produtos_byte = pickle.dumps(produtos)
     socket_cliente.enviar_bytes(produtos_byte)
     # Parte do Usuário
@@ -125,6 +124,7 @@ while True:
             else:
                 resposta = 'Compra Vazia!'
                 socket_cliente.enviar(resposta)
+        # Remover Item do Carrinho
         if menu == 6:
             id_lista = socket_cliente.receber_inteiro()
             if id_lista == -1 or id_lista > usuario.get_compra().tamanho_lista():
@@ -140,7 +140,7 @@ while True:
             salvar_usuario()
             resposta = "Obrigado por Comprar na nossa Loja\n Compre Conosco Sempre que Puder!"
             socket_cliente.enviar(resposta)
-
+        # Fechar Tela
         if menu == 0:
             salvar_usuario()
             break

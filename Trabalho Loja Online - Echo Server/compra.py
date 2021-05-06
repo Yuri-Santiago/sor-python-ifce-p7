@@ -1,9 +1,16 @@
+from item import Item
+
+
 class Compra:
     def __init__(self):
         self.itens = []
 
     def add_item(self, item):
-        self.itens.append(item)
+        if isinstance(item, Item):
+            self.itens.append(item)
+            return 'Item Válido'
+        else:
+            return 'Item Inválido'
 
     def get_valor_compra(self):
         return sum(list(map(lambda item: item.get_valor_item(), self.itens)))
