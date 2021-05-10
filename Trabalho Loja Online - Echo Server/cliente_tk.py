@@ -28,8 +28,8 @@ inicio = Frame(tela).pack()
 loja = Frame(tela).pack()
 user = Frame(tela).pack()
 compra = Frame(tela).pack()
-
 carrinho = Frame(tela).pack()
+
 # Criando Objetos
 # Carregando as Imagens para a Lista
 imagens_textos = ['imagens/mouse.png', 'imagens/teclado.png', 'imagens/headset.png', 'imagens/monitor.png',
