@@ -18,8 +18,10 @@ with open('produtos.pickle', 'rb') as arquivo_produtos:
 produtos = [Produto(p.nome, p.preco, p.descricao) for p in produtos_bytes]
 
 with open('usuarios.pickle', 'rb') as arquivo_usuarios:
-    usuarios = pickle.load(arquivo_usuarios)
-usuario_inicial = usuarios[0]
+    usuarios_cadastrados = pickle.load(arquivo_usuarios)
+
+usuario_inicial = usuarios_cadastrados[0]
+usuarios_ativos = []
 
 
 def salvar_usuario(usuario_final):
@@ -33,6 +35,8 @@ def salvar_usuario(usuario_final):
     with open('usuarios.pickle', 'wb') as arquivo_final:
         pickle.dump(usuarios_finais, arquivo_final)
 
+    usuarios_ativos.remove(usuario_final)
+
 
 def enviar_usuario(cliente, usuario_atualizado):
     usuario_byte = pickle.dumps(usuario_atualizado)
@@ -40,6 +44,10 @@ def enviar_usuario(cliente, usuario_atualizado):
 
 
 # Função Principal
+def guardar_usuario(usuario):
+    usuarios_ativos.append(usuario)
+
+
 def aplicacao(socket_cliente, endereco, usuario):
     print("Conexão Estabelecida com: %s" % str(endereco))
     # Envio Produtos para o Cliente
@@ -57,15 +65,20 @@ def aplicacao(socket_cliente, endereco, usuario):
                 socket_cliente.enviar(resposta)
             else:
                 validacao = 0
-                for u in usuarios:
+                for u in usuarios_cadastrados:
                     if email == u.get_email():  # Verificar se o Email está Cadastrado
                         validacao = 1
                         if senha == u.get_senha():  # Verificar se a Senha está Correta
-                            resposta = 'Bem vindo'
-                            socket_cliente.enviar(resposta)
-                            usuario = u
-                            enviar_usuario(socket_cliente, usuario)
-                            break
+                            if u not in usuarios_ativos:  # Verifica se o usuario não está conectado
+                                resposta = 'Bem vindo'
+                                socket_cliente.enviar(resposta)
+                                usuario = u
+                                enviar_usuario(socket_cliente, usuario)
+                                guardar_usuario(usuario)
+                                break
+                            else:  # Usuário já conectado
+                                resposta = 'Este usuário já está Conectado\nDesconecte ou Tente Outro Usuário'
+                                socket_cliente.enviar(resposta)
                         else:  # Senha Errada
                             resposta = 'Senha Incorreta.\nTente Novamente.'
                             socket_cliente.enviar(resposta)
@@ -81,7 +94,7 @@ def aplicacao(socket_cliente, endereco, usuario):
                 resposta = 'Digite Nome, Email\ne Senha.'
                 socket_cliente.enviar(resposta)
             else:
-                emails = [u.get_email() for u in usuarios]  # Lista com os emails cadastrados
+                emails = [u.get_email() for u in usuarios_cadastrados]  # Lista com os emails cadastrados
                 if email in emails:
                     resposta = 'Email já Cadastrado. \nPor Favor, Tente Novamente.'
                     socket_cliente.enviar(resposta)
@@ -90,10 +103,11 @@ def aplicacao(socket_cliente, endereco, usuario):
                     socket_cliente.enviar(resposta)
                     nome_correto = nome.title().strip()
                     usuario = Usuario(nome_correto, email, senha)
-                    usuarios.append(usuario)
+                    usuarios_cadastrados.append(usuario)
                     with open('usuarios.pickle', 'wb') as a_usuarios:
-                        pickle.dump(usuarios, a_usuarios)
+                        pickle.dump(usuarios_cadastrados, a_usuarios)
                     enviar_usuario(socket_cliente, usuario)
+                    guardar_usuario(usuario)
         # Adicionar Valor na Careira
         elif menu == 3:
             valor = socket_cliente.receber_float()

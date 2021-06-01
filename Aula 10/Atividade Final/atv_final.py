@@ -2,7 +2,7 @@
 1. Controle de cotas de disco. A ACME Inc., uma organização com mais de 1500 funcionários, está tendo problemas de
 espaço em disco no seu servidor de arquivos. Para tentar resolver este problema, o Administrador de Rede precisa saber
 qual o espaço em disco ocupado pelas contas dos usuários, e identificar os usuários com maior espaço ocupado. Através
-de um aplicativo baixado da Internet, ele conseguiu gerar o seguinte arquivo, chamado usuarios.txt:
+de um aplicativo baixado da Internet, ele conseguiu gerar o seguinte arquivo, chamado usuarios_cadastrados.txt:
 
 alexandre   456123789
 anderson    1245698456
@@ -57,7 +57,7 @@ total = sum(convertido)
 media = total / len(convertido)
 arquivo.close()
 
-string = 'ACME Inc.         Uso do espaco em disco pelos usuarios\n' + '-'*55 + \
+string = 'ACME Inc.         Uso do espaco em disco pelos usuarios_cadastrados\n' + '-' * 55 + \
          '\nNr.        Usuario       Espaco utilizado      % do uso\n'
 for x in range(len(linhas)):
     string += '%d %16s %19.2f MB %11.2f %s\n' % (x+1, pessoas[x], convertido[x], porcentagem[x], '%')
