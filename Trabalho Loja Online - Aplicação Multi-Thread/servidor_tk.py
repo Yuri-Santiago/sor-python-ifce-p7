@@ -35,7 +35,10 @@ def salvar_usuario(usuario_final):
     with open('usuarios.pickle', 'wb') as arquivo_final:
         pickle.dump(usuarios_finais, arquivo_final)
 
-    usuarios_ativos.remove(usuario_final)
+    try:
+        usuarios_ativos.remove(usuario_final)
+    except:
+        print('usuario não entrou.')
 
 
 def enviar_usuario(cliente, usuario_atualizado):
@@ -68,7 +71,8 @@ def aplicacao(socket_cliente, endereco, usuario):
                 for u in usuarios_cadastrados:
                     if email == u.get_email():  # Verificar se o Email está Cadastrado
                         validacao = 1
-                        if senha == u.get_senha():  # Verificar se a Senha está Correta
+                        if u.checa_senha(senha):  # Verificar se a Senha está Correta
+                            print(u.get_senha())
                             if u not in usuarios_ativos:  # Verifica se o usuario não está conectado
                                 resposta = 'Bem vindo'
                                 socket_cliente.enviar(resposta)

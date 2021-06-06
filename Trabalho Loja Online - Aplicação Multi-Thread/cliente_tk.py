@@ -139,7 +139,7 @@ quantidade_entry = Spinbox(compra, bg='white', font='Montserrat 16 bold', width=
                            to=20)
 compra_botao = Button(compra, text='Adicionar ao Carrinho', bg=cor_laranja, font='Montserrat 12 bold', bd=4,
                       relief='solid')
-especificacoes = Button(compra, text='Especificações', bg=cor_azul, font='Montserrat 14 bold', bd=4, relief='solid')
+especificacoes = Button(compra, text='Enviar de Presente', bg=cor_azul, font='Montserrat 14 bold', bd=4, relief='solid')
 
 # Quinta Tela
 itens_carrinho = Label(carrinho, text='Itens do Carrinho', bg=cor_laranja, font='Montserrat 16 bold', anchor=N,

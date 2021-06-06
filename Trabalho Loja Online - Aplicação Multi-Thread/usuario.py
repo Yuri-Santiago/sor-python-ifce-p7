@@ -1,3 +1,5 @@
+from passlib.hash import pbkdf2_sha256 as cryp
+
 from carteira import Carteira
 from compra import Compra
 
@@ -6,7 +8,7 @@ class Usuario:
     def __init__(self, nome='', email='', senha='', carteira=0):
         self.nome = nome
         self.email = email
-        self.senha = senha
+        self.senha = cryp.hash(senha, rounds=200000, salt_size=10)
         self.carteira = Carteira(carteira)
         self.compra = Compra()
 
@@ -20,7 +22,7 @@ class Usuario:
         self.email = str(email)
 
     def get_senha(self):
-        return self.senha
+        return str(self.senha)
 
     def set_senha(self, senha):
         self.senha = str(senha)
@@ -33,3 +35,8 @@ class Usuario:
 
     def fechar_compra(self):
         self.compra = Compra()
+
+    def checa_senha(self, senha):
+        if cryp.verify(senha, self.senha):
+            return True
+        return False
